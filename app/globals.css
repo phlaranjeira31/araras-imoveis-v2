@@ -1,0 +1,228 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================= */
+/* 🎨 PALETA ARARAS IMÓVEIS */
+/* ============================= */
+:root {
+  /* Verde principal */
+  --primary: 88 109 70; /* #586D46 */
+  
+
+  /* Verde secundário */
+  --leaf: 103 132 81; /* #678451 */
+
+  /* Verde claro */
+  --muted: 116 149 92; /* #74955C */
+
+  /* Amarelo destaque */
+  --accent: 255 228 2; /* #FFE402 */
+
+  /* Base neutra */
+  --background: 250 250 249;
+  --foreground: 15 23 42;
+}
+
+/* ============================= */
+/* 🌿 BASE */
+/* ============================= */
+html,
+body {
+  background-color: rgb(var(--background));
+  scroll-behavior: smooth;
+  color: rgb(var(--foreground));
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================= */
+/* ✨ PREMIUM FEEL (sombras) */
+/* ============================= */
+.shadow-soft {
+  box-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.04),
+    0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+.shadow-soft-lg {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    0 14px 40px rgba(0, 0, 0, 0.10);
+}
+
+/* ============================= */
+/* 📦 CONTAINER PADRÃO */
+/* ============================= */
+.container-site {
+  @apply mx-auto w-full max-w-7xl px-4;
+}
+
+/* ============================= */
+/* 🔘 BOTÕES PADRÃO */
+/* ============================= */
+.btn-primary {
+  @apply inline-flex items-center justify-center rounded-full
+    bg-primary px-5 py-3
+    text-sm font-semibold text-white
+    hover:opacity-95 transition;
+}
+
+.btn-outline {
+  @apply inline-flex items-center justify-center rounded-full
+    border border-black/10 bg-white px-5 py-3
+    text-sm font-semibold text-slate-800
+    hover:bg-slate-50 transition;
+}
+
+/* Variação outline verde (quando você QUISER verde) */
+.btn-outline-primary {
+  @apply inline-flex items-center justify-center rounded-full
+    border border-primary px-5 py-3
+    text-sm font-semibold text-primary
+    hover:bg-primary/10 transition;
+}
+
+/* ============================= */
+/* 🏷️ BADGES / TAGS */
+/* ============================= */
+.badge {
+  @apply inline-flex items-center rounded-full
+    bg-primary/10 px-3 py-1
+    text-xs font-semibold text-primary;
+}
+
+/* ============================= */
+/* 🧭 LINKS (premium) */
+/* ============================= */
+/* IMPORTANTE:
+   Não deixe todos os <a> verdes, isso derruba o "alto padrão".
+   Link padrão deve ser neutro. Use .link-primary quando quiser verde. */
+a {
+  @apply text-slate-700 hover:text-slate-950 transition-colors;
+}
+
+.link-primary {
+  @apply text-primary hover:opacity-90 transition;
+}
+
+/* ============================= */
+/* 🧊 INPUTS (premium) */
+/* ============================= */
+.input {
+  @apply w-full rounded-xl border border-black/10 bg-white px-3 py-2
+    outline-none focus:ring-2 focus:ring-black/10;
+}
+
+/* Leaflet fix: mapa sempre com tamanho correto */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+}
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.whatsapp-float {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 50;
+
+  width: 64px;
+  height: 64px;
+  border-radius: 9999px;
+
+  background: #25d366;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: 0 0 0 rgba(37, 211, 102, 0.55);
+  animation: whatsapp-pulse 1.8s infinite;
+  transition: transform 0.15s ease;
+}
+
+.whatsapp-float:hover {
+  transform: scale(1.07);
+  animation-play-state: paused;
+}
+
+@keyframes whatsapp-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 18px rgba(37, 211, 102, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
+  }
+}
+
+/* Chrome, Edge, Safari */
+.price-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 14px;      /* ⬅️ tamanho da bolinha */
+  width: 14px;       /* ⬅️ tamanho da bolinha */
+  border-radius: 9999px;
+  background: #2f855a; /* verde */
+  cursor: pointer;
+  border: 2px solid white;
+  margin-top: -5px; /* ajusta alinhamento */
+}
+
+/* Firefox */
+.price-range::-moz-range-thumb {
+  height: 14px;
+  width: 14px;
+  border-radius: 9999px;
+  background: #2f855a;
+  cursor: pointer;
+  border: 2px solid white;
+}
+/* REMOVE A BOLINHA DO RANGE MÍNIMO */
+.price-range-min::-webkit-slider-thumb {
+  display: none;
+}
+
+.price-range-min::-moz-range-thumb {
+  display: none;
+}
+
+/* opcional: impede clique/arraste */
+.price-range-min {
+  pointer-events: none;
+}
+
+.araras-premium-band {
+  background: linear-gradient(
+    180deg,
+    #f6fbf8 0%,
+    #eef7f2 35%,
+    #e6f3ec 65%,
+    #f0faf5 100%
+  );
+}
+
+.araras-bg{
+  background:
+    radial-gradient(1200px 600px at 30% 20%, rgba(255,255,255,0.55), transparent 60%),
+    radial-gradient(900px 500px at 80% 35%, rgba(255,255,255,0.35), transparent 55%),
+    linear-gradient(180deg, #0aa35b 0%, #32c976 35%, #b7ff2a 100%);
+}
+

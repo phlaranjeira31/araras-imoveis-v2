@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  role      String   @default("ADMIN") // ✅ sem enum (compatível com SQLite)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Imovel {
+  id           String  @id @default(cuid())
+  title        String
+  city         String
+  neighborhood String
+  cep          String? // opcional
+
+  // ✅ mapa/endereço
+  street String?
+  number String?
+  lat    Float?
+  lng    Float?
+
+  price Int?
+  slug  String @unique
+
+  // ✅ capa escolhida
+  coverPhotoId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  photos Photo[]
+
+  purpose String? @default("comprar")
+
+  // --- DETALHES (NOVOS CAMPOS) ---
+  tipo      String? // casa | apartamento | terreno | cobertura | comercial
+  quartos   Int?
+  suites    Int?
+  banheiros Int?
+  vagas     Int?
+
+  areaConstruida Int? // m²
+  areaTerreno    Int? // m²
+
+  mobiliado  Boolean?
+  condominio Int? // em reais (sem centavos) ex: 3000
+  iptu       Int? // em reais (sem centavos)
+
+  descricao String? // descrição completa (texto)
+
+  // --- ÁREA DO PROPRIETÁRIO (NOVO) ---
+  proprietarioNome     String?
+  proprietarioTelefone String?
+  proprietarioCpf      String?
+  proprietarioEmail    String?
+
+  // --- CONDOMÍNIO / CÓDIGO (NOVO) ---
+  condominioNome String?
+  codigo         String? @unique
+}
+
+
+model Photo {
+  id        String   @id @default(cuid())
+  url       String
+  imovelId  String
+  createdAt DateTime @default(now())
+
+  imovel Imovel @relation(fields: [imovelId], references: [id], onDelete: Cascade)
+
+  @@index([imovelId])
+}

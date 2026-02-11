@@ -1,0 +1,12 @@
+-- AlterTable
+ALTER TABLE "Imovel" ADD COLUMN "areaConstruida" INTEGER;
+ALTER TABLE "Imovel" ADD COLUMN "areaTerreno" INTEGER;
+ALTER TABLE "Imovel" ADD COLUMN "banheiros" INTEGER;
+ALTER TABLE "Imovel" ADD COLUMN "condominio" INTEGER;
+ALTER TABLE "Imovel" ADD COLUMN "descricao" TEXT;
+ALTER TABLE "Imovel" ADD COLUMN "iptu" INTEGER;
+ALTER TABLE "Imovel" ADD COLUMN "mobiliado" BOOLEAN;
+ALTER TABLE "Imovel" ADD COLUMN "quartos" INTEGER;
+ALTER TABLE "Imovel" ADD COLUMN "suites" INTEGER;
+ALTER TABLE "Imovel" ADD COLUMN "tipo" TEXT;
+ALTER TABLE "Imovel" ADD COLUMN "vagas" INTEGER;

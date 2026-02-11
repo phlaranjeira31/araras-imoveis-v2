@@ -1,0 +1,3 @@
+DELETE FROM "Imovel"
+WHERE "price" > 2147483647;
+
