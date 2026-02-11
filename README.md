@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏡 Araras Imóveis — Plataforma Web Imobiliária
 
-## Getting Started
+Plataforma web imobiliária desenvolvida com foco em **performance, SEO, escalabilidade e experiência do usuário**, unindo site institucional, catálogo de imóveis, painel administrativo e blog.
 
-First, run the development server:
+O projeto foi desenvolvido como **produto real**, seguindo padrões modernos de frontend e backend, com arquitetura preparada para produção e crescimento.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ✨ Visão Geral
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+O **Araras Imóveis** é uma aplicação full stack que permite:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Divulgação profissional de imóveis
+- Gestão completa via painel administrativo
+- Upload e organização de fotos
+- Blog institucional
+- Integração com mapas
+- Otimização para mecanismos de busca (SEO)
 
-## Learn More
+> 🔒 O deploy em produção será realizado após o encerramento do contrato vigente da contratante com a empresa atual.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🚀 Funcionalidades
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 🌐 Site Público
+- Listagem de imóveis
+- Página individual de imóvel (detalhes, fotos, localização)
+- Filtros por região, preço e características
+- Mapa interativo
+- Páginas institucionais
+- SEO técnico (sitemap e robots)
+- Layout responsivo
 
-## Deploy on Vercel
+### 🔐 Painel Administrativo
+- Autenticação segura (admin)
+- CRUD completo de imóveis
+- Upload de fotos e definição de imagem de capa
+- Gerenciamento de conteúdo
+- Interface pensada para uso real no dia a dial
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🧱 Stack Tecnológica
+
+### Frontend
+- **Next.js (App Router)**
+- **TypeScript**
+- **Tailwind CSS**
+
+### Backend
+- **API Routes (Next.js)**
+- **Prisma ORM**
+- **NextAuth** (autenticação)
+
+### Infra / Outros
+- Sitemap e Robots dinâmicos
+- Integração com mapas
+- Upload de arquivos
+- Estrutura preparada para deploy em Vercel
+- Organização em camadas (site, admin e API)
+
+---
+
+## 🗂️ Estrutura do Projeto (resumida)
+
+
