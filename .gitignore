@@ -45,3 +45,17 @@ next-env.d.ts
 # prisma local sqlite
 prisma/*.db
 prisma/*.db-journal
+
+# uploads locais (não versionar)
+public/uploads/
+public/uploads/**
+
+# bancos locais
+prisma/dev.db
+prisma/*.db
+prisma/*.db-journal
+
+# backups/temporários de migrations
+prisma/migrations_sqlite_backup/
+prisma/migrations_sqlite_backup/**
+prisma/*backup*
