@@ -122,7 +122,7 @@ export default function HomeSearchBar() {
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Procure por uma cidade, bairro, condomínio ou código"
+              placeholder="Procure pela cidade de preferência"
               className="
                 h-14 w-full bg-white px-5 text-[15px] text-slate-700 outline-none
               "

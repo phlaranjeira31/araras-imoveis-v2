@@ -19,14 +19,10 @@
   /* Amarelo destaque */
   --accent: 255 228 2; /* #FFE402 */
 
-  /* Base neutra */
   --background: 250 250 249;
   --foreground: 15 23 42;
 }
 
-/* ============================= */
-/* 🌿 BASE */
-/* ============================= */
 html,
 body {
   background-color: rgb(var(--background));
@@ -39,9 +35,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ============================= */
-/* ✨ PREMIUM FEEL (sombras) */
-/* ============================= */
 .shadow-soft {
   box-shadow:
     0 1px 1px rgba(0, 0, 0, 0.04),
@@ -54,16 +47,10 @@ body {
     0 14px 40px rgba(0, 0, 0, 0.10);
 }
 
-/* ============================= */
-/* 📦 CONTAINER PADRÃO */
-/* ============================= */
 .container-site {
   @apply mx-auto w-full max-w-7xl px-4;
 }
 
-/* ============================= */
-/* 🔘 BOTÕES PADRÃO */
-/* ============================= */
 .btn-primary {
   @apply inline-flex items-center justify-center rounded-full
     bg-primary px-5 py-3
@@ -78,7 +65,7 @@ body {
     hover:bg-slate-50 transition;
 }
 
-/* Variação outline verde (quando você QUISER verde) */
+
 .btn-outline-primary {
   @apply inline-flex items-center justify-center rounded-full
     border border-primary px-5 py-3
@@ -86,21 +73,14 @@ body {
     hover:bg-primary/10 transition;
 }
 
-/* ============================= */
-/* 🏷️ BADGES / TAGS */
-/* ============================= */
+
 .badge {
   @apply inline-flex items-center rounded-full
     bg-primary/10 px-3 py-1
     text-xs font-semibold text-primary;
 }
 
-/* ============================= */
-/* 🧭 LINKS (premium) */
-/* ============================= */
-/* IMPORTANTE:
-   Não deixe todos os <a> verdes, isso derruba o "alto padrão".
-   Link padrão deve ser neutro. Use .link-primary quando quiser verde. */
+
 a {
   @apply text-slate-700 hover:text-slate-950 transition-colors;
 }
@@ -177,16 +157,16 @@ svg {
 /* Chrome, Edge, Safari */
 .price-range::-webkit-slider-thumb {
   -webkit-appearance: none;
-  height: 14px;      /* ⬅️ tamanho da bolinha */
-  width: 14px;       /* ⬅️ tamanho da bolinha */
+  height: 14px;      
+  width: 14px;       
   border-radius: 9999px;
-  background: #2f855a; /* verde */
+  background: #2f855a; 
   cursor: pointer;
   border: 2px solid white;
-  margin-top: -5px; /* ajusta alinhamento */
+  margin-top: -5px; 
 }
 
-/* Firefox */
+
 .price-range::-moz-range-thumb {
   height: 14px;
   width: 14px;
@@ -195,7 +175,7 @@ svg {
   cursor: pointer;
   border: 2px solid white;
 }
-/* REMOVE A BOLINHA DO RANGE MÍNIMO */
+
 .price-range-min::-webkit-slider-thumb {
   display: none;
 }
@@ -204,7 +184,6 @@ svg {
   display: none;
 }
 
-/* opcional: impede clique/arraste */
 .price-range-min {
   pointer-events: none;
 }
@@ -219,10 +198,5 @@ svg {
   );
 }
 
-.araras-bg{
-  background:
-    radial-gradient(1200px 600px at 30% 20%, rgba(255,255,255,0.55), transparent 60%),
-    radial-gradient(900px 500px at 80% 35%, rgba(255,255,255,0.35), transparent 55%),
-    linear-gradient(180deg, #0aa35b 0%, #32c976 35%, #b7ff2a 100%);
-}
+
 
