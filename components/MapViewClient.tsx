@@ -77,15 +77,19 @@ export default function MapViewClient({
   return (
     <div className="w-full overflow-hidden rounded-2xl border bg-white">
       <MapContainer
-        center={center}
-        zoom={zoom}
-        scrollWheelZoom
-        style={{ height, width: "100%" }}
-      >
+  {...({
+    center,
+    zoom,
+    scrollWheelZoom: true,
+    style: { height, width: "100%" },
+  } as any)}
+>
         <TileLayer
-          attribution='&copy; OpenStreetMap'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
+  {...({
+    attribution: "&copy; OpenStreetMap",
+    url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  } as any)}
+/>
 
         <ClickHandler
           onPick={(lat, lng) => {

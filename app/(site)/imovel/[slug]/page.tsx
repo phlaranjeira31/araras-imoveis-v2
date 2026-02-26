@@ -1,12 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import ImovelPhotosGallery from "@/components/ImovelPhotosGallery";
 import ShareImovelButton from "@/components/ShareImovelButton";
 
 
 export const runtime = "nodejs";
+export const revalidate = 60;
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -20,9 +21,22 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!slug) return {};
 
   const imovel = await prisma.imovel.findUnique({
-    where: { slug },
-    include: { photos: true },
-  });
+  where: { slug },
+  select: {
+    title: true,
+    slug: true,
+    city: true,
+    neighborhood: true,
+    price: true,
+    descricao: true,
+    coverPhotoId: true,
+    photos: {
+      take: 1, // ✅ só 1 foto, bem leve
+      orderBy: { createdAt: "desc" },
+      select: { id: true, url: true },
+    },
+  },
+});
 
   if (!imovel) {
     return {
@@ -36,11 +50,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       ? ""
       : v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-  const cover =
-    (imovel.coverPhotoId &&
-      imovel.photos.find((p) => p.id === imovel.coverPhotoId)?.url) ||
-    imovel.photos[0]?.url ||
-    "/placeholder.jpg";
+  const cover = imovel.photos[0]?.url || "/placeholder.jpg";
+
 
   const baseUrl =
     process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";

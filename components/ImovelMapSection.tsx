@@ -15,9 +15,10 @@ export default function ImovelMapSection({ lat, lng, cep }: Props) {
 
       <div className="mt-4">
         <MapViewClient
-          value={hasCoords ? { lat: lat!, lng: lng! } : null}
-          height={420}
-        />
+  value={hasCoords ? { lat: lat!, lng: lng! } : null}
+  height={420}
+  onChange={() => {}}
+/>
       </div>
 
       <div className="mt-3 text-sm text-slate-600">

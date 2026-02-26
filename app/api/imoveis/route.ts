@@ -40,7 +40,6 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    // básicos (mínimo pra criar)
     const title = String(body?.title ?? "").trim();
     const city = String(body?.city ?? "").trim();
     const neighborhood = String(body?.neighborhood ?? "").trim();
@@ -57,37 +56,24 @@ export async function POST(req: Request) {
         ? String(body.slug).trim()
         : slugify(`${title}-${neighborhood}-${city}`);
 
-    // garante slug único
-    let slug = slugBase;
-    let i = 2;
-    while (await prisma.imovel.findUnique({ where: { slug } })) {
-      slug = `${slugBase}-${i}`;
-      i++;
-      if (i > 50) break;
-    }
-
     const data: any = {
       title,
       city,
       neighborhood,
-      slug,
     };
 
-    // ✅✅✅ ADICIONADO (ÚNICA MUDANÇA): salvar purpose corretamente
+    // PURPOSE
     if (body?.purpose !== undefined) {
-      const p = String(body.purpose ?? "")
-        .trim()
-        .toLowerCase();
+      const p = String(body.purpose ?? "").trim().toLowerCase();
 
-      // só aceitamos valores válidos; "todos" não deve ser salvo no banco
       if (p === "alugar") data.purpose = "alugar";
       else if (p === "comprar") data.purpose = "comprar";
       else if (p === "temporada") data.purpose = "temporada";
       else if (p === "lancamentos") data.purpose = "lancamentos";
-      else data.purpose = "comprar"; // fallback seguro
+      else data.purpose = "comprar";
     }
 
-    // opcionais (se o form mandar, salvamos)
+    // Opcionais
     if (body?.cep !== undefined) data.cep = body.cep ? String(body.cep).trim() : null;
     if (body?.street !== undefined) data.street = body.street ? String(body.street).trim() : null;
     if (body?.number !== undefined) data.number = body.number ? String(body.number).trim() : null;
@@ -99,7 +85,6 @@ export async function POST(req: Request) {
 
     if (body?.price !== undefined) data.price = parseMoneyToInt(body.price);
 
-    // novos campos
     if (body?.tipo !== undefined) data.tipo = body.tipo ? String(body.tipo).trim() : null;
 
     if (body?.quartos !== undefined) data.quartos = parseIntOrNull(body.quartos);
@@ -122,28 +107,14 @@ export async function POST(req: Request) {
     if (body?.descricao !== undefined)
       data.descricao = body.descricao ? String(body.descricao).trim() : null;
 
-    // ✅✅✅ ADICIONADO: nome do condomínio (texto)
     if (body?.condominioNome !== undefined)
-      data.condominioNome = body.condominioNome ? String(body.condominioNome).trim() : null;
+      data.condominioNome = body.condominioNome
+        ? String(body.condominioNome).trim()
+        : null;
 
-    // ✅✅✅ ADICIONADO: código do imóvel (único)
-    if (body?.codigo !== undefined) {
-      const codigo = body.codigo ? String(body.codigo).trim() : null;
-      data.codigo = codigo;
+    if (body?.codigo !== undefined)
+      data.codigo = body.codigo ? String(body.codigo).trim() : null;
 
-      // se veio código, garantimos que não repete (mensagem clara)
-      if (codigo) {
-        const exists = await prisma.imovel.findUnique({ where: { codigo } });
-        if (exists) {
-          return NextResponse.json(
-            { error: "Código do imóvel já existe. Escolha outro." },
-            { status: 400 }
-          );
-        }
-      }
-    }
-
-    // ✅✅✅ ADICIONADO: área do proprietário
     if (body?.proprietarioNome !== undefined)
       data.proprietarioNome = body.proprietarioNome
         ? String(body.proprietarioNome).trim()
@@ -164,22 +135,47 @@ export async function POST(req: Request) {
         ? String(body.proprietarioEmail).trim()
         : null;
 
-    const created = await prisma.imovel.create({
-      data,
-    });
+    let created = null;
+
+    for (let i = 0; i < 50; i++) {
+      const attemptSlug = i === 0 ? slugBase : `${slugBase}-${i + 1}`;
+
+      try {
+        created = await prisma.imovel.create({
+          data: {
+            ...data,
+            slug: attemptSlug,
+          },
+        });
+        break;
+      } catch (e: any) {
+        if (e?.code === "P2002") {
+          const target = e?.meta?.target;
+
+          if (Array.isArray(target) && target.includes("slug")) continue;
+
+          if (Array.isArray(target) && target.includes("codigo")) {
+            return NextResponse.json(
+              { error: "Código do imóvel já existe. Escolha outro." },
+              { status: 400 }
+            );
+          }
+        }
+
+        throw e;
+      }
+    }
+
+    if (!created) {
+      return NextResponse.json(
+        { error: "Não foi possível gerar slug único." },
+        { status: 409 }
+      );
+    }
 
     return NextResponse.json({ imovel: created }, { status: 201 });
   } catch (e: any) {
     console.error("POST /api/imoveis error:", e);
-
-    // ✅ ADICIONADO: fallback pra erro de unique (caso passe pelo check e o Prisma bloqueie)
-    const msg = String(e?.message || "");
-    if (msg.toLowerCase().includes("unique") && msg.toLowerCase().includes("codigo")) {
-      return NextResponse.json(
-        { error: "Código do imóvel já existe. Escolha outro." },
-        { status: 400 }
-      );
-    }
 
     return NextResponse.json(
       { error: "Erro ao salvar imóvel." },
@@ -187,6 +183,7 @@ export async function POST(req: Request) {
     );
   }
 }
+
 
 
 

@@ -1,7 +1,11 @@
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { formatBRL } from "@/lib/format";
 import PriceRangeClient from "@/components/PriceRangeClient";
+
 
 type PageProps = {
   searchParams?:
@@ -64,7 +68,94 @@ export default async function ImoveisPage({ searchParams }: PageProps) {
   const minPriceNum = minPriceSelecionado ? Number(minPriceSelecionado) : null;
   const maxPriceNum = maxPriceSelecionado ? Number(maxPriceSelecionado) : null;
 
-  const imoveis = await prisma.imovel.findMany({
+  const purposeNormalized = purposeSelecionado
+    ? purposeSelecionado.toLowerCase()
+    : "";
+
+  const qNormalized = qSelecionado ? qSelecionado.toLowerCase() : "";
+
+  // ============================
+  // ✅ PERFORMANCE: filtros no BANCO (Prisma)
+  // ============================
+  const where: any = {};
+
+  if (bairroSelecionado) {
+    where.neighborhood = { equals: bairroSelecionado, mode: "insensitive" };
+  }
+
+  if (cidadeSelecionada) {
+    where.city = { equals: cidadeSelecionada, mode: "insensitive" };
+  }
+
+  if (tipoSelecionado) {
+    where.tipo = { equals: tipoSelecionado, mode: "insensitive" };
+  }
+
+  if (purposeNormalized && purposeNormalized !== "todos") {
+    where.purpose = { equals: purposeNormalized, mode: "insensitive" };
+  }
+
+  if (qNormalized) {
+    where.OR = [
+      { city: { contains: qNormalized, mode: "insensitive" } },
+      { neighborhood: { contains: qNormalized, mode: "insensitive" } },
+      { title: { contains: qNormalized, mode: "insensitive" } },
+      { slug: { contains: qNormalized, mode: "insensitive" } },
+    ];
+  }
+
+  // preço
+  if (minPriceNum !== null && !Number.isNaN(minPriceNum)) {
+    where.price = { ...(where.price ?? {}), gte: minPriceNum };
+  }
+  if (maxPriceNum !== null && !Number.isNaN(maxPriceNum)) {
+    where.price = { ...(where.price ?? {}), lte: maxPriceNum };
+  }
+
+  // ============================
+  // ✅ PERFORMANCE: selects (bairros/cidades/tipos) via DISTINCT no banco
+  // ============================
+  const bairrosRows = await prisma.imovel.findMany({
+    select: { neighborhood: true },
+    distinct: ["neighborhood"],
+    orderBy: { neighborhood: "asc" },
+  });
+
+  const cidadesRows = await prisma.imovel.findMany({
+    select: { city: true },
+    distinct: ["city"],
+    orderBy: { city: "asc" },
+  });
+
+  const tiposRows = await prisma.imovel.findMany({
+    select: { tipo: true },
+    distinct: ["tipo"],
+    orderBy: { tipo: "asc" },
+  });
+
+  const bairros = bairrosRows
+    .map((r: any) => (r.neighborhood ?? "").trim())
+    .filter(Boolean)
+    .sort((a: string, b: string) => a.localeCompare(b, "pt-BR"));
+
+  const cidades = cidadesRows
+    .map((r: any) => (r.city ?? "").trim())
+    .filter(Boolean)
+    .sort((a: string, b: string) => a.localeCompare(b, "pt-BR"));
+
+  const tiposDisponiveis = tiposRows
+    .map((r: any) => (r.tipo ?? "").trim())
+    .filter(Boolean)
+    .sort((a: string, b: string) => a.localeCompare(b, "pt-BR"));
+
+  const tiposParaSelect =
+    tiposDisponiveis.length > 0 ? tiposDisponiveis : TIPOS_FIXOS;
+
+  // ============================
+  // ✅ PERFORMANCE: busca só os imóveis já filtrados no DB
+  // ============================
+  const imoveisBase = await prisma.imovel.findMany({
+    where,
     orderBy: { createdAt: "desc" },
     select: {
       id: true,
@@ -76,89 +167,34 @@ export default async function ImoveisPage({ searchParams }: PageProps) {
       coverPhotoId: true,
       tipo: true,
       purpose: true,
-      photos: {
-        select: { id: true, url: true },
-        orderBy: { createdAt: "desc" },
-      },
     },
   });
 
-  const bairros = Array.from(
-    new Set(imoveis.map((i) => (i.neighborhood ?? "").trim()).filter(Boolean))
-  ).sort((a, b) => a.localeCompare(b, "pt-BR"));
+  // pega só os ids das capas
+  const coverIds = imoveisBase
+    .map((i: any) => i.coverPhotoId)
+    .filter(Boolean) as string[];
 
-  const cidades = Array.from(
-    new Set(imoveis.map((i) => (i.city ?? "").trim()).filter(Boolean))
-  ).sort((a, b) => a.localeCompare(b, "pt-BR"));
+  const coverPhotos = coverIds.length
+    ? await prisma.photo.findMany({
+        where: { id: { in: coverIds } },
+        select: { id: true, url: true },
+      })
+    : [];
 
-  const tiposDisponiveis = Array.from(
-    new Set(imoveis.map((i) => (i.tipo ?? "").trim()).filter(Boolean))
-  ).sort((a, b) => a.localeCompare(b, "pt-BR"));
+  const coverMap = new Map(coverPhotos.map((p: any) => [p.id, p.url]));
 
-  const tiposParaSelect =
-    tiposDisponiveis.length > 0 ? tiposDisponiveis : TIPOS_FIXOS;
-
-  const purposeNormalized = purposeSelecionado
-    ? purposeSelecionado.toLowerCase()
-    : "";
-
-  // ✅ ACRÉSCIMO: normaliza o q
-  const qNormalized = qSelecionado ? qSelecionado.toLowerCase() : "";
-
-  const imoveisFiltrados = imoveis.filter((i) => {
-    const b = (i.neighborhood ?? "").trim().toLowerCase();
-    const c = (i.city ?? "").trim().toLowerCase();
-    const title = (i.title ?? "").trim().toLowerCase();
-    const slug = (i.slug ?? "").trim().toLowerCase();
-
-    const t = (i.tipo ?? "").trim().toLowerCase();
-    const p = ((i as any).purpose ?? "").trim().toLowerCase();
-
-    const okBairro = bairroSelecionado
-      ? b === bairroSelecionado.toLowerCase()
-      : true;
-
-    const okCidade = cidadeSelecionada
-      ? c === cidadeSelecionada.toLowerCase()
-      : true;
-
-    const okTipo = tipoSelecionado
-      ? t === tipoSelecionado.toLowerCase()
-      : true;
-
-    const okPurpose = purposeNormalized
-      ? purposeNormalized === "todos"
-        ? true
-        : p === purposeNormalized
-      : true;
-
-    // ✅ ACRÉSCIMO: busca livre (q) por cidade/bairro/título/slug
-    const okQ = qNormalized
-      ? c.includes(qNormalized) ||
-        b.includes(qNormalized) ||
-        title.includes(qNormalized) ||
-        slug.includes(qNormalized)
-      : true;
-
-    // ✅ ACRÉSCIMO: filtro por preço
-    const price = typeof i.price === "number" ? i.price : null;
-
-    const okMin =
-      minPriceNum !== null && !Number.isNaN(minPriceNum)
-        ? price !== null
-          ? price >= minPriceNum
-          : false
-        : true;
-
-    const okMax =
-      maxPriceNum !== null && !Number.isNaN(maxPriceNum)
-        ? price !== null
-          ? price <= maxPriceNum
-          : false
-        : true;
-
-    return okBairro && okCidade && okTipo && okPurpose && okQ && okMin && okMax;
+  // devolve no MESMO formato que você já usa: photos: [{id,url}]
+  const imoveis = imoveisBase.map((im: any) => {
+    const url = im.coverPhotoId ? coverMap.get(im.coverPhotoId) ?? "" : "";
+    return {
+      ...im,
+      photos: im.coverPhotoId && url ? [{ id: im.coverPhotoId, url }] : [],
+    };
   });
+
+  // mantém a mesma variável final, agora já vem do banco
+  const imoveisFiltrados = imoveis;
 
   const temFiltro = Boolean(
     bairroSelecionado ||
@@ -287,30 +323,32 @@ export default async function ImoveisPage({ searchParams }: PageProps) {
 
             {/* ✅ ACRÉSCIMO: PREÇO (ESTILO SLIDER) */}
             <div className="md:col-span-4">
-  <div className="flex justify-center">
-    <div className="w-full max-w-3xl">
-      <label className="text-sm font-bold text-slate-900">Preço</label>
+              <div className="flex justify-center">
+                <div className="w-full max-w-3xl">
+                  <label className="text-sm font-bold text-slate-900">Preço</label>
 
-      <div className="mt-2 rounded-2xl border border-slate-200 bg-white px-4 py-3">
-        <PriceRangeClient
-          nameMin="minPrice"
-          nameMax="maxPrice"
-          defaultMin={
-            minPriceNum !== null && !Number.isNaN(minPriceNum) ? minPriceNum : 0
-          }
-          defaultMax={
-            maxPriceNum !== null && !Number.isNaN(maxPriceNum)
-              ? maxPriceNum
-              : 25000000
-          }
-          minBound={0}
-          maxBound={25000000}
-          step={50000}
-        />
-      </div>
-    </div>
-  </div>
-</div>
+                  <div className="mt-2 rounded-2xl border border-slate-200 bg-white px-4 py-3">
+                    <PriceRangeClient
+                      nameMin="minPrice"
+                      nameMax="maxPrice"
+                      defaultMin={
+                        minPriceNum !== null && !Number.isNaN(minPriceNum)
+                          ? minPriceNum
+                          : 0
+                      }
+                      defaultMax={
+                        maxPriceNum !== null && !Number.isNaN(maxPriceNum)
+                          ? maxPriceNum
+                          : 25000000
+                      }
+                      minBound={0}
+                      maxBound={25000000}
+                      step={50000}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
           </form>
         </div>
       )}
@@ -321,10 +359,10 @@ export default async function ImoveisPage({ searchParams }: PageProps) {
         </div>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {imoveisFiltrados.map((imovel) => {
+          {imoveisFiltrados.map((imovel: any) => {
             const cover =
               (imovel.coverPhotoId
-                ? imovel.photos.find((p) => p.id === imovel.coverPhotoId)?.url
+                ? imovel.photos.find((p: any) => p.id === imovel.coverPhotoId)?.url
                 : null) ||
               imovel.photos[0]?.url ||
               "/placeholder.jpg";

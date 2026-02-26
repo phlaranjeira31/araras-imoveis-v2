@@ -1,5 +1,7 @@
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
-import { MetadataRoute } from "next";
+import type { MetadataRoute } from "next";
 import prisma from "@/lib/prisma";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

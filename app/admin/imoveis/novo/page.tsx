@@ -445,10 +445,10 @@ export default function NovoImovelPage() {
           <MapPicker
             lat={lat}
             lng={lng}
-            onChange={(v) => {
-              setLat(v.lat);
-              setLng(v.lng);
-            }}
+            onChange={(v: any) => {
+  setLat(v.lat);
+  setLng(v.lng);
+}}
           />
         </section>
 

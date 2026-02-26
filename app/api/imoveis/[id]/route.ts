@@ -1,5 +1,4 @@
-// app/api/imoveis/[id]/route.ts
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 function parseMoneyToInt(value: any): number | null {
@@ -22,9 +21,14 @@ function parseIntOrNull(v: any): number | null {
   return Math.trunc(n);
 }
 
-export async function GET(_req: Request, { params }: { params: { id: string } }) {
+export async function GET(
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+
   const imovel = await prisma.imovel.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: { photos: true },
   });
 
@@ -39,7 +43,12 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
   return NextResponse.json({ imovel: { ...imovel, coverUrl } });
 }
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+
   try {
     const body = await req.json();
 
@@ -52,7 +61,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
         coverPhotoId = null;
       } else {
         const photo = await prisma.photo.findFirst({
-          where: { imovelId: params.id, url },
+          where: { imovelId: id, url },
           select: { id: true },
         });
         coverPhotoId = photo?.id ?? null;
@@ -67,8 +76,10 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
       data.neighborhood = String(body.neighborhood).trim();
     if (body?.cep !== undefined) data.cep = body.cep ? String(body.cep).trim() : null;
 
-    if (body?.street !== undefined) data.street = body.street ? String(body.street).trim() : null;
-    if (body?.number !== undefined) data.number = body.number ? String(body.number).trim() : null;
+    if (body?.street !== undefined)
+      data.street = body.street ? String(body.street).trim() : null;
+    if (body?.number !== undefined)
+      data.number = body.number ? String(body.number).trim() : null;
 
     if (body?.lat !== undefined)
       data.lat = body.lat === "" || body.lat === null ? null : Number(body.lat);
@@ -106,7 +117,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     }
 
     const updated = await prisma.imovel.update({
-      where: { id: params.id },
+      where: { id },
       data,
     });
 
@@ -117,13 +128,11 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   }
 }
 
-export async function DELETE(_req: Request, ctx: any) {
-  // Next pode entregar params como objeto OU Promise
-  const rawParams = ctx?.params;
-  const params =
-    rawParams && typeof rawParams?.then === "function" ? await rawParams : rawParams;
-
-  const id = params?.id;
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
 
   if (!id || id === "undefined") {
     return NextResponse.json({ error: "ID do imóvel não informado." }, { status: 400 });

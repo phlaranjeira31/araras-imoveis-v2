@@ -1,3 +1,6 @@
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 import HomeSearchBar from "@/components/HomeSearchBar";
 import HomeImoveisCarousel from "@/components/HomeImoveisCarousel";
 import CorretoresSection from "@/components/CorretorasSection";

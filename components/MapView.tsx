@@ -19,15 +19,19 @@ export default function MapView({ lat, lng }: Props) {
   return (
     <div className="rounded-2xl overflow-hidden border">
       <MapContainer
-        center={[lat, lng]}
-        zoom={15}
-        scrollWheelZoom={false}
-        style={{ height: 360, width: "100%" }}
-      >
+  {...({
+    center: [lat, lng],
+    zoom: 15,
+    scrollWheelZoom: false,
+    style: { height: 360, width: "100%" },
+  } as any)}
+>
         <TileLayer
-          attribution='&copy; OpenStreetMap'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
+  {...({
+    attribution: "&copy; OpenStreetMap",
+    url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  } as any)}
+/>
         <Marker position={[lat, lng]} />
       </MapContainer>
     </div>

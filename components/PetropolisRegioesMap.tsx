@@ -52,25 +52,31 @@ export default function PetropolisRegioesMap() {
   return (
     <div className="h-full w-full">
       <MapContainer
-        center={center}
-        zoom={11}
-        style={{ height: "100%", width: "100%" }}
-        scrollWheelZoom
-      >
+  {...({
+    center,
+    zoom: 11,
+    style: { height: "100%", width: "100%" },
+    scrollWheelZoom: true,
+  } as any)}
+>
         <TileLayer
-          attribution='&copy; OpenStreetMap'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
+  {...({
+    attribution: "&copy; OpenStreetMap",
+    url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  } as any)}
+/>
 
         {PINS.map((p) => (
           <Marker
-            key={`${p.cidade}-${p.bairro}`}
-            position={[p.lat, p.lng]}
-            icon={icon}
-            eventHandlers={{
-              click: () => goToImoveis(p),
-            }}
-          >
+  {...({
+    key: `${p.cidade}-${p.bairro}`,
+    position: [p.lat, p.lng],
+    icon,
+    eventHandlers: {
+      click: () => goToImoveis(p),
+    },
+  } as any)}
+>
             <Popup>
               <div className="text-sm">
                 <div className="font-semibold">{p.label}</div>
