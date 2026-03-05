@@ -16,22 +16,28 @@ function normalizeCover(url?: string | null) {
 
 export default async function HomeImoveisCarousel() {
   const imoveis = await prisma.imovel.findMany({
-    orderBy: { createdAt: "desc" },
-    take: 12,
-    select: {
-      id: true,
-      title: true,
-      city: true,
-      neighborhood: true,
-      price: true,
-      slug: true,
-      coverPhotoId: true,
-      photos: {
-        select: { id: true, url: true },
-        orderBy: { createdAt: "asc" },
-      },
+  where: {
+    ativo: true,
+    featured: true,
+  },
+  orderBy: {
+    featuredAt: "desc",
+  },
+  take: 10,
+  select: {
+    id: true,
+    title: true,
+    city: true,
+    neighborhood: true,
+    price: true,
+    slug: true,
+    coverPhotoId: true,
+    photos: {
+      select: { id: true, url: true },
+      orderBy: { createdAt: "asc" },
     },
-  });
+  },
+});
 
   const items = imoveis.map((imovel) => {
     const coverById = imovel.coverPhotoId
@@ -77,7 +83,7 @@ export default async function HomeImoveisCarousel() {
           <p className="text-sm text-slate-500">Catálogo</p>
           <h2 className="text-3xl font-extrabold tracking-tight">Imóveis</h2>
           <p className="text-slate-600 mt-2">
-            Veja os últimos imóveis cadastrados. Use as setas para navegar.
+            Veja os imóveis em destaque! Use as setas para navegar.
           </p>
 
           {/* ✅ Ver todos no MOBILE */}

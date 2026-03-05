@@ -2,10 +2,11 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 import Link from "next/link";
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { formatBRL } from "@/lib/format";
 import PriceRangeClient from "@/components/PriceRangeClient";
-
+import { Prisma } from "@prisma/client";
+import { ArrowUpDown } from "lucide-react";
 
 type PageProps = {
   searchParams?:
@@ -22,6 +23,12 @@ type PageProps = {
         // ✅ ACRÉSCIMO: preço
         minPrice?: string;
         maxPrice?: string;
+
+        // ✅ PAGINAÇÃO
+        page?: string;
+
+        // ✅ ORDENAR
+        sort?: string;
       }
     | Promise<{
         bairro?: string;
@@ -36,6 +43,12 @@ type PageProps = {
         // ✅ ACRÉSCIMO: preço
         minPrice?: string;
         maxPrice?: string;
+
+        // ✅ PAGINAÇÃO
+        page?: string;
+
+        // ✅ ORDENAR
+        sort?: string;
       }>;
 };
 
@@ -73,6 +86,16 @@ export default async function ImoveisPage({ searchParams }: PageProps) {
     : "";
 
   const qNormalized = qSelecionado ? qSelecionado.toLowerCase() : "";
+
+  // ✅ ORDENAR (novo)
+  const sortSelecionado = (sp?.sort ?? "").toString().trim();
+  const sortValue = sortSelecionado || "recentes";
+
+  // ✅ PAGINAÇÃO (novo)
+  const TAKE = 12;
+  const pageRaw = (sp?.page ?? "").toString().trim();
+  const pageNum = Math.max(1, Number(pageRaw || 1) || 1);
+  const skip = (pageNum - 1) * TAKE;
 
   // ============================
   // ✅ PERFORMANCE: filtros no BANCO (Prisma)
@@ -112,26 +135,38 @@ export default async function ImoveisPage({ searchParams }: PageProps) {
     where.price = { ...(where.price ?? {}), lte: maxPriceNum };
   }
 
+  // ✅ ORDER BY TIPADO (corrige o erro do build)
+  const orderBy: Prisma.ImovelOrderByWithRelationInput =
+    sortValue === "menor_preco"
+      ? { price: "asc" }
+      : sortValue === "maior_preco"
+      ? { price: "desc" }
+      : { createdAt: "desc" };
+
   // ============================
   // ✅ PERFORMANCE: selects (bairros/cidades/tipos) via DISTINCT no banco
+  // (NÃO usa "imoveis" aqui, pra não quebrar)
   // ============================
-  const bairrosRows = await prisma.imovel.findMany({
-    select: { neighborhood: true },
-    distinct: ["neighborhood"],
-    orderBy: { neighborhood: "asc" },
-  });
-
-  const cidadesRows = await prisma.imovel.findMany({
-    select: { city: true },
-    distinct: ["city"],
-    orderBy: { city: "asc" },
-  });
-
-  const tiposRows = await prisma.imovel.findMany({
-    select: { tipo: true },
-    distinct: ["tipo"],
-    orderBy: { tipo: "asc" },
-  });
+  const [bairrosRows, cidadesRows, tiposRows] = await Promise.all([
+    prisma.imovel.findMany({
+      where: { ativo: true },
+      select: { neighborhood: true },
+      distinct: ["neighborhood"],
+      orderBy: { neighborhood: "asc" },
+    }),
+    prisma.imovel.findMany({
+      where: { ativo: true },
+      select: { city: true },
+      distinct: ["city"],
+      orderBy: { city: "asc" },
+    }),
+    prisma.imovel.findMany({
+      where: { ativo: true },
+      select: { tipo: true },
+      distinct: ["tipo"],
+      orderBy: { tipo: "asc" },
+    }),
+  ]);
 
   const bairros = bairrosRows
     .map((r: any) => (r.neighborhood ?? "").trim())
@@ -148,15 +183,25 @@ export default async function ImoveisPage({ searchParams }: PageProps) {
     .filter(Boolean)
     .sort((a: string, b: string) => a.localeCompare(b, "pt-BR"));
 
-  const tiposParaSelect =
+    const tiposParaSelect =
     tiposDisponiveis.length > 0 ? tiposDisponiveis : TIPOS_FIXOS;
 
+  // ✅ garante ativo sem risco de ser sobrescrito
+  const whereFinal = { ...where, ativo: true };
+
+  // ✅ total para paginação (novo)
+  const total = await prisma.imovel.count({ where: whereFinal });
+  const totalPages = Math.max(1, Math.ceil(total / TAKE));
+  const currentPage = Math.min(pageNum, totalPages);
+
   // ============================
-  // ✅ PERFORMANCE: busca só os imóveis já filtrados no DB
+  // ✅ PERFORMANCE: busca só os imóveis já filtrados no DB (com paginação)
   // ============================
   const imoveisBase = await prisma.imovel.findMany({
-    where,
-    orderBy: { createdAt: "desc" },
+    where: whereFinal,
+    orderBy,
+    take: TAKE,
+    skip: (currentPage - 1) * TAKE,
     select: {
       id: true,
       title: true,
@@ -203,8 +248,48 @@ export default async function ImoveisPage({ searchParams }: PageProps) {
       purposeSelecionado ||
       qSelecionado ||
       minPriceSelecionado ||
-      maxPriceSelecionado
+      maxPriceSelecionado ||
+      sortSelecionado
   );
+
+  // ✅ helper de URL preservando filtros (novo)
+  const makePageHref = (p: number) => {
+    const params = new URLSearchParams();
+
+    if (bairroSelecionado) params.set("bairro", bairroSelecionado);
+    if (cidadeSelecionada) params.set("cidade", cidadeSelecionada);
+    if (tipoSelecionado) params.set("tipo", tipoSelecionado);
+
+    if (purposeSelecionado) params.set("purpose", purposeSelecionado);
+    if (negocioSelecionado) params.set("negocio", negocioSelecionado);
+
+    if (qSelecionado) params.set("q", qSelecionado);
+
+    if (minPriceSelecionado) params.set("minPrice", minPriceSelecionado);
+    if (maxPriceSelecionado) params.set("maxPrice", maxPriceSelecionado);
+
+    if (sortSelecionado) params.set("sort", sortSelecionado);
+
+    params.set("page", String(p));
+
+    return `/imoveis?${params.toString()}`;
+  };
+
+  const pageButtons = (() => {
+    // mostra: 1 ... (p-1) p (p+1) ... last
+    const set = new Set<number>();
+    set.add(1);
+    set.add(totalPages);
+    set.add(currentPage);
+    set.add(currentPage - 1);
+    set.add(currentPage + 1);
+
+    const arr = Array.from(set)
+      .filter((n) => n >= 1 && n <= totalPages)
+      .sort((a, b) => a - b);
+
+    return arr;
+  })();
 
   return (
     <main className="px-6 py-10 max-w-6xl mx-auto space-y-6">
@@ -221,9 +306,20 @@ export default async function ImoveisPage({ searchParams }: PageProps) {
             {temFiltro ? null : "."}
           </p>
         ) : null}
+
+        {/* ✅ PAGINAÇÃO: info (novo) */}
+        {total > 0 ? (
+          <p className="text-sm text-neutral-500">
+            Página <span className="font-semibold">{currentPage}</span> de{" "}
+            <span className="font-semibold">{totalPages}</span> •{" "}
+            <span className="font-semibold">{total}</span> imóveis
+          </p>
+        ) : null}
       </div>
 
-      {(bairros.length > 0 || cidades.length > 0 || tiposParaSelect.length > 0) && (
+      {(bairros.length > 0 ||
+        cidades.length > 0 ||
+        tiposParaSelect.length > 0) && (
         <div className="rounded-3xl border border-slate-200 bg-white/80 p-5 shadow-sm backdrop-blur md:p-6">
           <form
             action="/imoveis"
@@ -243,6 +339,9 @@ export default async function ImoveisPage({ searchParams }: PageProps) {
             {negocioSelecionado ? (
               <input type="hidden" name="negocio" value={negocioSelecionado} />
             ) : null}
+
+            {/* ✅ PAGINAÇÃO: quando aplicar filtro, volta pra página 1 */}
+            <input type="hidden" name="page" value="1" />
 
             {/* SELECT BAIRRO */}
             <div>
@@ -321,34 +420,54 @@ export default async function ImoveisPage({ searchParams }: PageProps) {
               </Link>
             </div>
 
-            {/* ✅ ACRÉSCIMO: PREÇO (ESTILO SLIDER) */}
-            <div className="md:col-span-4">
-              <div className="flex justify-center">
-                <div className="w-full max-w-3xl">
-                  <label className="text-sm font-bold text-slate-900">Preço</label>
+            {/* PREÇO + ORDENAR (RESPONSIVO) */}
+<div className="md:col-span-4">
+  <div className="flex justify-center">
+    <div className="w-full max-w-3xl">
+      {/* ✅ no mobile: 1 coluna | no md+: 2 colunas */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-[1fr_224px] md:gap-6">
+        {/* BLOCO PREÇO */}
+        <div>
+          <label className="text-sm font-bold text-slate-900">Preço</label>
 
-                  <div className="mt-2 rounded-2xl border border-slate-200 bg-white px-4 py-3">
-                    <PriceRangeClient
-                      nameMin="minPrice"
-                      nameMax="maxPrice"
-                      defaultMin={
-                        minPriceNum !== null && !Number.isNaN(minPriceNum)
-                          ? minPriceNum
-                          : 0
-                      }
-                      defaultMax={
-                        maxPriceNum !== null && !Number.isNaN(maxPriceNum)
-                          ? maxPriceNum
-                          : 25000000
-                      }
-                      minBound={0}
-                      maxBound={25000000}
-                      step={50000}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="mt-2 rounded-2xl border border-slate-200 bg-white px-4 py-3">
+            <PriceRangeClient
+              nameMin="minPrice"
+              nameMax="maxPrice"
+              defaultMin={
+                minPriceNum !== null && !Number.isNaN(minPriceNum) ? minPriceNum : 0
+              }
+              defaultMax={
+                maxPriceNum !== null && !Number.isNaN(maxPriceNum) ? maxPriceNum : 25000000
+              }
+              minBound={0}
+              maxBound={25000000}
+              step={50000}
+            />
+          </div>
+        </div>
+
+        {/* BLOCO ORDENAR */}
+        <div>
+          <div className="flex items-center gap-2 text-sm font-bold text-slate-900">
+            <ArrowUpDown className="h-4 w-4 text-slate-600" />
+            Ordenar por
+          </div>
+
+          <select
+            name="sort"
+            defaultValue={sortValue}
+            className="mt-2 h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm"
+          >
+            <option value="recentes">Recentes</option>
+            <option value="maior_preco">Maior preço</option>
+            <option value="menor_preco">Menor preço</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
           </form>
         </div>
       )}
@@ -358,56 +477,105 @@ export default async function ImoveisPage({ searchParams }: PageProps) {
           Nenhum imóvel encontrado com esses filtros.
         </div>
       ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {imoveisFiltrados.map((imovel: any) => {
-            const cover =
-              (imovel.coverPhotoId
-                ? imovel.photos.find((p: any) => p.id === imovel.coverPhotoId)?.url
-                : null) ||
-              imovel.photos[0]?.url ||
-              "/placeholder.jpg";
+        <>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {imoveisFiltrados.map((imovel: any) => {
+              const cover =
+                (imovel.coverPhotoId
+                  ? imovel.photos.find((p: any) => p.id === imovel.coverPhotoId)
+                      ?.url
+                  : null) ||
+                imovel.photos[0]?.url ||
+                "/placeholder.jpg";
 
-            return (
+              return (
+                <Link
+                  key={imovel.id}
+                  href={`/imovel/${imovel.slug}`}
+                  className="block rounded-2xl border overflow-hidden hover:shadow-sm"
+                >
+                  <img
+                    src={cover}
+                    alt={imovel.title}
+                    className="h-56 w-full object-cover"
+                  />
+
+                  <div className="p-4 space-y-2">
+                    <p className="text-sm text-green-700 font-medium">
+                      {imovel.city}
+                    </p>
+
+                    <h3 className="text-lg font-semibold">{imovel.title}</h3>
+
+                    <p className="text-sm text-neutral-500">
+                      {imovel.neighborhood} • {imovel.city}
+                      {imovel.tipo ? ` • ${imovel.tipo}` : ""}
+                    </p>
+
+                    {typeof imovel.price === "number" && (
+                      <div className="inline-flex rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-800">
+                        {formatBRL(imovel.price)}
+                      </div>
+                    )}
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* ✅ PAGINAÇÃO (novo) */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 pt-4">
               <Link
-                key={imovel.id}
-                href={`/imovel/${imovel.slug}`}
-                className="block rounded-2xl border overflow-hidden hover:shadow-sm"
+                href={makePageHref(Math.max(1, currentPage - 1))}
+                className={`h-10 px-4 rounded-xl border inline-flex items-center text-sm font-semibold ${
+                  currentPage === 1 ? "pointer-events-none opacity-50" : ""
+                }`}
               >
-                <img
-                  src={cover}
-                  alt={imovel.title}
-                  className="h-56 w-full object-cover"
-                />
-
-                <div className="p-4 space-y-2">
-                  <p className="text-sm text-green-700 font-medium">
-                    {imovel.city}
-                  </p>
-
-                  <h3 className="text-lg font-semibold">{imovel.title}</h3>
-
-                  <p className="text-sm text-neutral-500">
-                    {imovel.neighborhood} • {imovel.city}
-                    {imovel.tipo ? ` • ${imovel.tipo}` : ""}
-                  </p>
-
-                  {typeof imovel.price === "number" && (
-                    <div className="inline-flex rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-800">
-                      {formatBRL(imovel.price)}
-                    </div>
-                  )}
-                </div>
+                Anterior
               </Link>
-            );
-          })}
-        </div>
+
+              <div className="flex items-center gap-2">
+                {pageButtons.map((n, idx) => {
+                  const prev = pageButtons[idx - 1];
+                  const hasGap = prev != null && n - prev > 1;
+
+                  return (
+                    <span key={n} className="flex items-center gap-2">
+                      {hasGap ? (
+                        <span className="px-1 text-neutral-400">…</span>
+                      ) : null}
+
+                      <Link
+                        href={makePageHref(n)}
+                        className={`h-10 min-w-10 px-3 rounded-xl border inline-flex items-center justify-center text-sm font-bold ${
+                          n === currentPage
+                            ? "bg-primary text-white border-primary"
+                            : "hover:bg-neutral-50"
+                        }`}
+                      >
+                        {n}
+                      </Link>
+                    </span>
+                  );
+                })}
+              </div>
+
+              <Link
+                href={makePageHref(Math.min(totalPages, currentPage + 1))}
+                className={`h-10 px-4 rounded-xl border inline-flex items-center text-sm font-semibold ${
+                  currentPage === totalPages ? "pointer-events-none opacity-50" : ""
+                }`}
+              >
+                Próxima
+              </Link>
+            </div>
+          )}
+        </>
       )}
     </main>
   );
 }
-
-
-
 
 
 

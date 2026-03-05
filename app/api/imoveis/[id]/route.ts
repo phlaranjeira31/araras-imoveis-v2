@@ -109,6 +109,12 @@ export async function PATCH(
       data.condominio = parseMoneyToInt(body.condominio);
     if (body?.iptu !== undefined) data.iptu = parseMoneyToInt(body.iptu);
 
+    if (body?.corretoraCaptacao !== undefined) {
+  data.corretoraCaptacao = body.corretoraCaptacao
+    ? String(body.corretoraCaptacao).trim()
+    : null;
+}
+
     if (body?.descricao !== undefined)
       data.descricao = body.descricao ? String(body.descricao).trim() : null;
 

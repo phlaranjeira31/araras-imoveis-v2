@@ -37,7 +37,8 @@ export default async function RegiaoPage({ params }: PageProps) {
   // Pega imóveis daquela região (usando neighborhood)
   const imoveis = await prisma.imovel.findMany({
     where: {
-      neighborhood: regiao.bairro,
+    ativo: true,
+    neighborhood: regiao.bairro,
     },
     orderBy: { createdAt: "desc" },
     select: {

@@ -15,6 +15,13 @@ function formatMoneyBRLFromDigits(digits: string) {
   return n.toLocaleString("pt-BR");
 }
 
+const CORRETORAS = [
+  "Lidiane Farias",
+  "Ana Andrade",
+  "Claudia Raposo",
+  "Elis",
+] as const;
+
 export default function NovoImovelPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -56,6 +63,9 @@ export default function NovoImovelPage() {
   // ✅ ADICIONADO: condomínio (nome) + código do imóvel (único)
   const [condominioNome, setCondominioNome] = useState<string>("");
   const [codigo, setCodigo] = useState<string>("");
+
+  // ✅ ADICIONADO: endereço interno (somente admin)
+  const [endereco, setEndereco] = useState<string>("");
 
   // ✅ ADICIONADO: área do proprietário
   const [proprietarioNome, setProprietarioNome] = useState<string>("");
@@ -101,6 +111,9 @@ export default function NovoImovelPage() {
         // ✅ ADICIONADO: nome do condomínio + código do imóvel
         condominioNome: condominioNome || null,
         codigo: codigo || null,
+
+        // ✅ ADICIONADO: endereço interno (somente admin)
+        endereco: endereco || null,
 
         // ✅ ADICIONADO: proprietário
         proprietarioNome: proprietarioNome || null,
@@ -334,6 +347,8 @@ export default function NovoImovelPage() {
               </label>
             </div>
 
+            
+
             <div>
               <label className="text-sm font-medium">Condomínio (R$)</label>
               <input
@@ -353,6 +368,17 @@ export default function NovoImovelPage() {
                 value={condominioNome}
                 onChange={(e) => setCondominioNome(e.target.value)}
                 placeholder="Ex: Bela Vista"
+              />
+            </div>
+
+            {/* ✅ ADICIONADO: ENDEREÇO INTERNO (somente admin) */}
+            <div>
+              <label className="text-sm font-medium">Endereço do imóvel</label>
+              <input
+                className="mt-1 w-full rounded-xl border px-3 py-2 outline-none focus:ring-2"
+                value={endereco}
+                onChange={(e) => setEndereco(e.target.value)}
+                placeholder="Ex: Estrada União Indústria, 9500, Itaipava"
               />
             </div>
 
@@ -376,11 +402,27 @@ export default function NovoImovelPage() {
                 onChange={(e) => setCodigo(e.target.value)}
                 placeholder="Ex: AR-102"
               />
-              <p className="mt-1 text-xs text-slate-500">
-                Não pode repetir. Se já existir, o sistema vai barrar.
-              </p>
             </div>
           </div>
+<br></br>
+          <div>
+  <label className="block text-sm font-medium">
+    Corretora (captação)
+  </label>
+
+  <select
+    name="corretoraCaptacao"
+    defaultValue=""
+    className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+  >
+    <option value="">Selecione...</option>
+    {CORRETORAS.map((c) => (
+      <option key={c} value={c}>
+        {c}
+      </option>
+    ))}
+  </select>
+</div>
 
           <div className="mt-5">
             <label className="text-sm font-medium">Descrição</label>
@@ -446,9 +488,9 @@ export default function NovoImovelPage() {
             lat={lat}
             lng={lng}
             onChange={(v: any) => {
-  setLat(v.lat);
-  setLng(v.lng);
-}}
+              setLat(v.lat);
+              setLng(v.lng);
+            }}
           />
         </section>
 

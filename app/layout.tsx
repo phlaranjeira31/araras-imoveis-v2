@@ -3,6 +3,7 @@
 import "./globals.css";
 import type { Metadata, Viewport } from "next";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
+import CookieConsent from "@/components/CookieConsent";
 
 export const metadata: Metadata = {
   title: "Araras Imóveis",
@@ -49,6 +50,7 @@ export default function RootLayout({
   return (
     <html lang="pt-br" suppressHydrationWarning>
       <body suppressHydrationWarning>
+        <CookieConsent />
         {children}
         <WhatsAppFloat />
 

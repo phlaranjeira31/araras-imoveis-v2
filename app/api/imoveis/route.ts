@@ -115,6 +115,9 @@ export async function POST(req: Request) {
     if (body?.codigo !== undefined)
       data.codigo = body.codigo ? String(body.codigo).trim() : null;
 
+    if (body?.endereco !== undefined)
+  data.endereco = body.endereco ? String(body.endereco).trim() : null;
+
     if (body?.proprietarioNome !== undefined)
       data.proprietarioNome = body.proprietarioNome
         ? String(body.proprietarioNome).trim()

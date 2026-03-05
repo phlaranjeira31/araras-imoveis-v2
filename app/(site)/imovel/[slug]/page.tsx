@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import ImovelPhotosGallery from "@/components/ImovelPhotosGallery";
 import ShareImovelButton from "@/components/ShareImovelButton";
+import WhatsAppImovelBinder from "@/components/WhatsAppImovelBinder";
 
 
 export const runtime = "nodejs";
@@ -122,6 +123,7 @@ if (bairro) {
     where: {
       id: { not: imovel.id },
       neighborhood: bairro,
+      ativo: true,
     },
     include: { photos: true },
     orderBy: { createdAt: "desc" },
@@ -135,6 +137,7 @@ if (relacionados.length === 0 && cidade) {
     where: {
       id: { not: imovel.id },
       city: cidade,
+      ativo: true,
     },
     include: { photos: true },
     orderBy: { createdAt: "desc" },
@@ -147,6 +150,7 @@ if (relacionados.length === 0) {
   relacionados = await prisma.imovel.findMany({
     where: {
       id: { not: imovel.id },
+      ativo: true,
     },
     include: { photos: true },
     orderBy: { createdAt: "desc" },
@@ -267,7 +271,20 @@ const tituloRelacionados = bairro || cidade || "sua região";
   
 
   return (
+
     <main className="mx-auto max-w-6xl px-4 py-10">
+      <WhatsAppImovelBinder
+      phoneTel="+5524999397343"
+      title={imovel.title}
+      city={imovel.city ?? ""}
+      neighborhood={imovel.neighborhood ?? ""}
+      priceText={
+        typeof imovel.price === "number"
+          ? `R$ ${imovel.price.toLocaleString("pt-BR")}`
+          : undefined
+      }
+      url={`/imovel/${imovel.slug}`}
+    />
       <Link href="/imoveis" className="text-sm font-semibold text-primary">
         ← Voltar para Imóveis
       </Link>
@@ -279,6 +296,11 @@ const tituloRelacionados = bairro || cidade || "sua região";
 
     <div className="mt-2 text-slate-600">
       {[imovel.neighborhood, imovel.city].filter(Boolean).join(" • ")}
+      {imovel.codigo && (
+  <div className="mt-1 text-sm font-semibold text-primary">
+    Código: {imovel.codigo}
+  </div>
+)}
     </div>
 
     {imovel.price ? (
@@ -320,9 +342,9 @@ const tituloRelacionados = bairro || cidade || "sua região";
       </svg>
 
       <span className="flex flex-col items-start leading-tight">
-        <span>Agende sua visita</span>
+        <span>Tenho interesse</span>
         <span className="text-[12px] font-semibold text-white/85">
-          Atendimento imediato
+          Atendimento via WhatsApp
         </span>
       </span>
     </a>

@@ -1,30 +1,16 @@
-// lib/prisma.ts
 import { PrismaClient } from "@prisma/client";
 
-const globalForPrisma = globalThis as unknown as {
-  prisma?: PrismaClient;
-};
+const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
 export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
     log: ["error"],
-
-    // ✅ melhora conexão com Neon (serverless)
-    datasources: {
-      db: {
-        url: process.env.DATABASE_URL,
-      },
-    },
   });
 
-// ✅ evita criar múltiplas conexões em dev
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
-}
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 
 export default prisma;
-
 
 
 

@@ -1,6 +1,7 @@
 // components/Footer.tsx
 import Link from "next/link";
-import Image from "next/image"; // ✅ ADIÇÃO
+import Image from "next/image";
+import { MapPin, Phone, Mail, Clock } from "lucide-react";
 
 const PHONE_DISPLAY = "(24) 99939-7343";
 const PHONE_TEL = "+5524999397343";
@@ -20,38 +21,40 @@ export default function Footer() {
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
           {/* Marca */}
           <div>
-            {/* ✅ ADIÇÃO: Logo no footer (precisa estar com fundo transparente) */}
-           
             <h3 className="text-lg font-extrabold tracking-wide">
               Araras Imóveis
             </h3>
             <p className="mt-1 text-sm text-white/80">CRECI: 10376</p>
 
             <p className="mt-3 max-w-sm text-sm leading-relaxed text-white/90">
-              Atendimento rápido e curadoria de imóveis de alto padrão em toda Petrópolis.
+              Atendimento rápido e curadoria de imóveis de alto padrão em toda serra carioca.
             </p>
 
             <div className="mt-4">
-              <p className="text-sm font-semibold text-white">Endereço:</p>
-              <a
-                href={MAPS_URL}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-1 inline-block text-sm font-medium text-white underline underline-offset-4 hover:text-white/80"
-              >
-                {ADDRESS_DISPLAY}
-              </a>
+              <div className="flex items-start gap-2">
+                <MapPin className="h-5 w-5 mt-1 text-white/80 shrink-0" />
+                <div>
+                  <p className="text-sm font-semibold text-white">Endereço:</p>
+                  <a
+                    href={MAPS_URL}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-1 inline-block text-sm font-medium text-white underline underline-offset-4 hover:text-white/80"
+                  >
+                    {ADDRESS_DISPLAY}
+                  </a>
+                </div>
+              </div>
             </div>
+
             <div className="mt-6 relative h-28 w-56 sm:h-32 sm:w-64">
-  <Image
-    src="/brand/logo-footer.png"
-    alt="Araras Imóveis"
-    fill
-    className="object-contain"
-  />
-</div>
-
-
+              <Image
+                src="/brand/logo-footer.png"
+                alt="Araras Imóveis"
+                fill
+                className="object-contain"
+              />
+            </div>
           </div>
 
           {/* Contato */}
@@ -61,29 +64,38 @@ export default function Footer() {
             </h3>
 
             <div className="mt-4 space-y-3 text-sm">
-              <div>
-                <span className="font-semibold text-white">Telefone:</span>{" "}
-                <a
-                  href={`tel:${PHONE_TEL}`}
-                  className="font-medium text-white underline underline-offset-4 hover:text-white/80"
-                >
-                  {PHONE_DISPLAY}
-                </a>
+              <div className="flex items-center gap-2">
+                <Phone className="h-4 w-4 text-white/80 shrink-0" />
+                <div>
+                  <span className="font-semibold text-white">Telefone:</span>{" "}
+                  <a
+                    href={`tel:${PHONE_TEL}`}
+                    className="font-medium text-white underline underline-offset-4 hover:text-white/80"
+                  >
+                    {PHONE_DISPLAY}
+                  </a>
+                </div>
               </div>
 
-              <div>
-                <span className="font-semibold text-white">E-mail:</span>{" "}
-                <a
-                  href={`mailto:${EMAIL}`}
-                  className="font-medium text-white underline underline-offset-4 hover:text-white/80"
-                >
-                  {EMAIL}
-                </a>
+              <div className="flex items-center gap-2">
+                <Mail className="h-4 w-4 text-white/80 shrink-0" />
+                <div>
+                  <span className="font-semibold text-white">E-mail:</span>{" "}
+                  <a
+                    href={`mailto:${EMAIL}`}
+                    className="font-medium text-white underline underline-offset-4 hover:text-white/80"
+                  >
+                    {EMAIL}
+                  </a>
+                </div>
               </div>
 
-              <div className="text-white/90">
-                <span className="font-semibold text-white">Horário:</span>{" "}
-                Seg–Sáb • 9h–18h
+              <div className="flex items-center gap-2 text-white/90">
+                <Clock className="h-4 w-4 text-white/80 shrink-0" />
+                <div>
+                  <span className="font-semibold text-white">Horário:</span>{" "}
+                  Seg–Sáb • 9h–18h
+                </div>
               </div>
             </div>
 

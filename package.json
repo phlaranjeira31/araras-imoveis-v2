@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
-    "start": "next start",
+    "start": "set NODE_OPTIONS=--dns-result-order=ipv4first && next start",
     "create-admin": "ts-node scripts/create-admin.ts"
   },
   "dependencies": {
@@ -13,6 +13,7 @@
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.9.0",
     "leaflet": "^1.9.4",
+    "lucide-react": "^0.575.0",
     "next": "16.1.6",
     "next-auth": "^4.24.13",
     "nodemailer": "^7.0.13",
@@ -39,4 +40,3 @@
     "typescript": "^5.9.3"
   }
 }
-

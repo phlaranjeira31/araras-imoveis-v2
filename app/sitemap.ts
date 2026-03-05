@@ -9,6 +9,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
   const imoveis = await prisma.imovel.findMany({
+    where: { ativo: true },
     select: {
       slug: true,
       updatedAt: true,
