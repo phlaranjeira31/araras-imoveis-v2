@@ -1,4 +1,3 @@
-
 // app/layout.tsx
 import "./globals.css";
 import type { Metadata, Viewport } from "next";
@@ -8,9 +7,13 @@ import CookieConsent from "@/components/CookieConsent";
 export const metadata: Metadata = {
   title: "Araras Imóveis",
   description: "Atendimento rápido e curadoria de imóveis em toda Petrópolis.",
+  icons: {
+    icon: "/icon.png",
+    shortcut: "/icon.png",
+    apple: "/icon.png",
+  },
 };
 
-/** ✅ ACRÉSCIMO: garante responsividade real no mobile */
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
@@ -22,7 +25,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  /* ✅ JSON-LD GLOBAL (Schema.org) — APENAS ACRÉSCIMO */
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
   const jsonLd = {
@@ -45,7 +47,6 @@ export default function RootLayout({
       { "@type": "City", name: "Araras" },
     ],
   };
-  /* ✅ FIM JSON-LD GLOBAL */
 
   return (
     <html lang="pt-br" suppressHydrationWarning>
@@ -54,7 +55,6 @@ export default function RootLayout({
         {children}
         <WhatsAppFloat />
 
-        {/* ✅ JSON-LD (Schema.org) — APENAS ACRÉSCIMO */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
