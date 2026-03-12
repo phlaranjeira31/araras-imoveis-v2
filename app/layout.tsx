@@ -1,3 +1,4 @@
+
 // app/layout.tsx
 import "./globals.css";
 import type { Metadata, Viewport } from "next";
@@ -12,6 +13,7 @@ export const metadata: Metadata = {
     shortcut: "/icon.png",
     apple: "/icon.png",
   },
+  manifest: "/site.webmanifest", // ✅ ADIÇÃO PARA ANDROID / PWA
 };
 
 export const viewport: Viewport = {
@@ -63,7 +65,6 @@ export default function RootLayout({
     </html>
   );
 }
-
 
 
 
