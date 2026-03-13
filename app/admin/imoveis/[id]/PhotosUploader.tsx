@@ -4,15 +4,11 @@ import { useEffect, useState } from "react";
 
 type Photo = { id: string; url: string };
 
-const MAX_UPLOAD_BYTES = 4 * 1024 * 1024; // margem segura abaixo de 4.5 MB da Vercel
-const MAX_DIMENSION = 2000;
-const JPEG_QUALITY = 0.82;
+const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;
+const MAX_DIMENSION = 1600;
+const JPEG_QUALITY = 0.7;
 
 async function compressImage(file: File): Promise<File> {
-  // Se já estiver pequeno, mantém como está
-  if (file.size <= MAX_UPLOAD_BYTES) return file;
-
-  // Só comprime imagens suportadas
   if (!file.type.startsWith("image/")) return file;
 
   const imageBitmap = await createImageBitmap(file);
@@ -31,7 +27,6 @@ async function compressImage(file: File): Promise<File> {
 
   ctx.drawImage(imageBitmap, 0, 0, width, height);
 
-  // Converte para JPEG para reduzir tamanho de forma consistente
   const blob: Blob = await new Promise((resolve, reject) => {
     canvas.toBlob(
       (result) => {
@@ -66,7 +61,9 @@ export default function PhotosUploader({
   );
 
   async function load() {
-    const res = await fetch(`/api/imoveis/${imovelId}/photos`, { cache: "no-store" });
+    const res = await fetch(`/api/imoveis/${imovelId}/photos`, {
+      cache: "no-store",
+    });
     const data = await res.json();
     setPhotos(data.photos || []);
     setCoverPhotoId(data.coverPhotoId ?? coverPhotoId ?? null);
@@ -85,16 +82,23 @@ export default function PhotosUploader({
       for (const originalFile of Array.from(files)) {
         let fileToUpload = originalFile;
 
-        // Se vier acima do limite seguro, tenta comprimir antes
-        if (originalFile.size > MAX_UPLOAD_BYTES) {
+        // comprime sempre imagens grandes
+        if (originalFile.size > 1.5 * 1024 * 1024) {
           fileToUpload = await compressImage(originalFile);
         }
 
-        // Se mesmo comprimida ainda ficar grande, avisa com clareza
+        console.log("arquivo original:", originalFile.name, originalFile.size);
+        console.log(
+          "arquivo enviado:",
+          fileToUpload.name,
+          fileToUpload.size,
+          fileToUpload.type
+        );
+
         if (fileToUpload.size > MAX_UPLOAD_BYTES) {
           alert(
-            `A imagem "${originalFile.name}" está muito grande para envio.\n\n` +
-              `Tente exportar/comprimir para menos de 4 MB.`
+            `A imagem "${originalFile.name}" ainda ficou muito grande para envio.\n\n` +
+              `Tente uma versão menor.`
           );
           continue;
         }
