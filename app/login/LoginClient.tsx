@@ -57,7 +57,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               type="email"
-              placeholder="admin@ararasimoveis.com"
+              placeholder="Digite o email válido"
               required
               autoComplete="email"
             />
