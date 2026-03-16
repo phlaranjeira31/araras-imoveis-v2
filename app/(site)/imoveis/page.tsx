@@ -400,26 +400,6 @@ export default async function ImoveisPage({ searchParams }: PageProps) {
               </select>
             </div>
 
-            <div className="flex gap-2">
-              <button
-                className="h-12 rounded-2xl bg-primary px-5 text-sm font-extrabold text-white"
-                type="submit"
-              >
-                Aplicar
-              </button>
-
-              <Link
-                href={
-                  purposeSelecionado
-                    ? `/imoveis?purpose=${encodeURIComponent(purposeSelecionado)}`
-                    : "/imoveis"
-                }
-                className="h-12 rounded-2xl border px-5 text-sm font-bold inline-flex items-center"
-              >
-                Limpar
-              </Link>
-            </div>
-
             {/* PREÇO + ORDENAR (RESPONSIVO) */}
 <div className="md:col-span-4">
   <div className="flex justify-center">
@@ -468,6 +448,25 @@ export default async function ImoveisPage({ searchParams }: PageProps) {
     </div>
   </div>
 </div>
+<div className="flex gap-2">
+              <button
+                className="h-12 rounded-2xl bg-primary px-5 text-sm font-extrabold text-white"
+                type="submit"
+              >
+                Aplicar
+              </button>
+
+              <Link
+                href={
+                  purposeSelecionado
+                    ? `/imoveis?purpose=${encodeURIComponent(purposeSelecionado)}`
+                    : "/imoveis"
+                }
+                className="h-12 rounded-2xl border px-5 text-sm font-bold inline-flex items-center"
+              >
+                Limpar
+              </Link>
+            </div>
           </form>
         </div>
       )}
