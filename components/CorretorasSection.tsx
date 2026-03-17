@@ -22,15 +22,6 @@ const CORRETORAS: Corretora[] = [
     whats: "5521964507343",
   },
   {
-    nome: "Ana Andrade",
-    creci: "CRECI: 93672",
-    foto: "/corretoras/corretora-2.jpg",
-    descricao:
-      "Profissional, mãe e visionária. Com sólida experiência na área bancária, bacharel em Direito, atuante no mercado imobiliário com foco em resultados e habilidade em negociações. Construiu uma trajetória sólida pautada na ética, estratégia e relacionamentos duradouros.",
-    especialidades: ["Araras", "Locação", "Curadoria"],
-    whats: "5524999747909",
-  },
-  {
     nome: "Claudia Raposo",
     creci: "CRECI: 069261",
     foto: "/corretoras/corretora claudia.jpg",
