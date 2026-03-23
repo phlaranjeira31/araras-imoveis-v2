@@ -19,7 +19,7 @@ const REGIOES = [
   { slug: "posse", label: "Posse", bairro: "Posse" },
 ];
 
-// helper p/ achar região
+
 function getRegiao(slug: string) {
   return REGIOES.find((r) => r.slug === slug);
 }
@@ -34,7 +34,6 @@ export default async function RegiaoPage({ params }: PageProps) {
 
   if (!regiao) return notFound();
 
-  // Pega imóveis daquela região (usando neighborhood)
   const imoveis = await prisma.imovel.findMany({
     where: {
     ativo: true,
@@ -56,7 +55,6 @@ export default async function RegiaoPage({ params }: PageProps) {
     },
   });
 
-  // Mapa: pesquisa do bairro + Petrópolis
   const mapQuery = encodeURIComponent(`${regiao.bairro}, Petrópolis - RJ`);
   const mapSrc = `https://www.google.com/maps?q=${mapQuery}&output=embed`;
 

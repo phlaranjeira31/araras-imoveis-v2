@@ -7,7 +7,7 @@ const PHONE_DISPLAY = "(24) 99939-7343";
 const PHONE_TEL = "+5524999397343";
 const EMAIL = "araras.imoveisrj@gmail.com";
 
-const ADDRESS_DISPLAY = "Estrada União Industria, 9.500, Itaipava, Petrópolis - RJ";
+const ADDRESS_DISPLAY = "Estrada União Industria, 9.500, Sala 03, Itaipava, Petrópolis - RJ";
 const MAPS_URL = "https://maps.app.goo.gl/c4XBMaE3u8w2kZY2A";
 
 const INSTAGRAM_URL =

@@ -156,19 +156,25 @@ export default function EditImovelForm({
         />
 
         <div className="flex flex-col gap-1">
-  <label className="text-sm font-semibold text-neutral-700">Corretora (captação)</label>
+          <label className="text-sm font-semibold text-neutral-700">
+            Corretora (captação)
+          </label>
 
-  <select
-    name="corretoraCaptacao"
-    defaultValue={defaultValues.corretoraCaptacao || ""}
-    className="h-11 rounded-2xl border px-3 text-sm"
-  >
-    <option value="">—</option>
-    <option value="Lidiane Farias">Lidiane Farias</option>
-    <option value="Ana Andrade">Ana Andrade</option>
-    <option value="Claudia Raposo">Claudia Raposo</option>
-  </select>
-</div>
+          <input
+            type="text"
+            name="corretoraCaptacao"
+            list="lista-corretoras-captacao"
+            defaultValue={defaultValues.corretoraCaptacao ?? ""}
+            className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+            placeholder="Digite ou selecione a corretora"
+          />
+
+          <datalist id="lista-corretoras-captacao">
+            {CORRETORAS.map((c) => (
+              <option key={c} value={c} />
+            ))}
+          </datalist>
+        </div>
       </div>
 
       <div className="flex flex-col gap-2">

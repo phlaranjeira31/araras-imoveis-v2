@@ -410,18 +410,19 @@ export default function NovoImovelPage() {
     Corretora (captação)
   </label>
 
-  <select
-    name="corretoraCaptacao"
-    defaultValue=""
-    className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
-  >
-    <option value="">Selecione...</option>
-    {CORRETORAS.map((c) => (
-      <option key={c} value={c}>
-        {c}
-      </option>
-    ))}
-  </select>
+  <input
+  type="text"
+  name="corretoraCaptacao"
+  list="lista-corretoras-captacao"
+  className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+  placeholder="Digite ou selecione a corretora"
+/>
+
+<datalist id="lista-corretoras-captacao">
+  {CORRETORAS.map((c) => (
+    <option key={c} value={c} />
+  ))}
+</datalist>
 </div>
 
           <div className="mt-5">

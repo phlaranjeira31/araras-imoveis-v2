@@ -54,17 +54,16 @@ export default async function AdminImoveisPage({
 
   const where: any = {};
 
-  // Obs: mantém como você fez (sem mode)
   if (tipo) where.tipo = { contains: tipo };
   if (bairro) where.neighborhood = { contains: bairro };
   if (codigo) where.codigo = { contains: codigo };
   if (condominioNome) where.condominioNome = { contains: condominioNome };
   if (proprietario) where.proprietarioNome = { contains: proprietario };
   if (telefone) where.proprietarioTelefone = { contains: telefone };
-  if (endereco) where.endereco = { contains: endereco }; // ✅ ADICIONADO
-  if (corretora && corretora !== "Todas") {
-  where.corretoraCaptacao = { equals: corretora, mode: "insensitive" };
-}
+  if (endereco) where.endereco = { contains: endereco };
+  if (corretora) {
+    where.corretoraCaptacao = { equals: corretora, mode: "insensitive" };
+  }
 
   if (min != null || max != null) {
     where.price = {};
@@ -72,10 +71,8 @@ export default async function AdminImoveisPage({
     if (max != null) where.price.lte = max;
   }
 
-  // ✅ PERFORMANCE: limita a listagem (evita puxar o mundo todo)
   const TAKE = 50;
 
-  // ✅ QUERY LEVE: NÃO PUXA photos AQUI
   const imoveisBase = await prisma.imovel.findMany({
     ...(Object.keys(where).length ? { where } : {}),
     orderBy: { createdAt: "desc" },
@@ -92,22 +89,18 @@ export default async function AdminImoveisPage({
       coverPhotoId: true,
       ativo: true,
       createdAt: true,
-
-      // planilha
       tipo: true,
       proprietarioNome: true,
       proprietarioTelefone: true,
       condominioNome: true,
       codigo: true,
-      endereco: true, // ✅ ADICIONADO
+      endereco: true,
       corretoraCaptacao: true,
     },
   });
 
   const imovelIds = imoveisBase.map((i) => i.id);
 
-  // ✅ Busca fotos só desses imóveis (1 query)
-  // pega id/url/imovelId e ordena desc para o "primeira foto" ser a mais recente
   const photos = imovelIds.length
     ? await prisma.photo.findMany({
         where: { imovelId: { in: imovelIds } },
@@ -116,7 +109,6 @@ export default async function AdminImoveisPage({
       })
     : [];
 
-  // Índices em memória
   const coverUrlByCoverId = new Map<string, string>();
   for (const p of photos) coverUrlByCoverId.set(p.id, p.url);
 
@@ -127,7 +119,6 @@ export default async function AdminImoveisPage({
     }
   }
 
-  // monta objeto final com coverUrl/hasCover e photos (apenas 0 ou 1)
   const imoveis = imoveisBase.map((im) => {
     const coverUrl = im.coverPhotoId
       ? coverUrlByCoverId.get(im.coverPhotoId) ?? ""
@@ -144,7 +135,6 @@ export default async function AdminImoveisPage({
       im.coverPhotoId && coverUrlByCoverId.has(im.coverPhotoId)
     );
 
-    // photos aqui vira só a mínima necessária pra não quebrar teu JSX
     const minimalPhotos =
       im.coverPhotoId && coverUrl
         ? [{ id: im.coverPhotoId, url: coverUrl }]
@@ -159,6 +149,8 @@ export default async function AdminImoveisPage({
       photos: minimalPhotos,
     };
   });
+
+  const imoveisSafe = JSON.parse(JSON.stringify(imoveis));
 
   return (
     <main className="px-6 py-10 max-w-6xl mx-auto space-y-6">
@@ -179,9 +171,7 @@ export default async function AdminImoveisPage({
         </div>
       </div>
 
-      {/* FILTRO / PLANILHA */}
       <section className="rounded-3xl border bg-white/80 backdrop-blur-sm p-6 space-y-6 shadow-sm">
-        {/* Header */}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h2 className="text-xl font-semibold text-neutral-900">
@@ -204,155 +194,139 @@ export default async function AdminImoveisPage({
           </div>
         </div>
 
-        {/* Form */}
-       <form
-  method="GET"
-  className="grid grid-cols-1 gap-5 md:grid-cols-4"
->
-  {/* Tipo */}
-  <div className="space-y-1">
-    <label className="text-xs font-semibold text-neutral-600">
-      Tipo de imóvel
-    </label>
-    <input
-      name="tipo"
-      defaultValue={tipo}
-      className="h-11 w-full rounded-xl border border-neutral-200 bg-white px-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
-      placeholder="Ex: casa, apartamento..."
-    />
-  </div>
+        <form
+          method="GET"
+          className="grid grid-cols-1 gap-5 md:grid-cols-4"
+        >
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-neutral-600">
+              Tipo de imóvel
+            </label>
+            <input
+              name="tipo"
+              defaultValue={tipo}
+              className="h-11 w-full rounded-xl border border-neutral-200 bg-white px-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
+              placeholder="Ex: casa, apartamento..."
+            />
+          </div>
 
-  {/* Valor mínimo */}
-  <div className="space-y-1">
-    <label className="text-xs font-semibold text-neutral-600">
-      Valor (mín.)
-    </label>
-    <input
-      name="valorMin"
-      defaultValue={valorMin}
-      className="h-11 w-full rounded-xl border border-neutral-200 bg-white px-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
-      placeholder="Ex: 500000"
-    />
-  </div>
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-neutral-600">
+              Valor (mín.)
+            </label>
+            <input
+              name="valorMin"
+              defaultValue={valorMin}
+              className="h-11 w-full rounded-xl border border-neutral-200 bg-white px-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
+              placeholder="Ex: 500000"
+            />
+          </div>
 
-  {/* Valor máximo */}
-  <div className="space-y-1">
-    <label className="text-xs font-semibold text-neutral-600">
-      Valor (máx.)
-    </label>
-    <input
-      name="valorMax"
-      defaultValue={valorMax}
-      className="h-11 w-full rounded-xl border border-neutral-200 bg-white px-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
-      placeholder="Ex: 3000000"
-    />
-  </div>
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-neutral-600">
+              Valor (máx.)
+            </label>
+            <input
+              name="valorMax"
+              defaultValue={valorMax}
+              className="h-11 w-full rounded-xl border border-neutral-200 bg-white px-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
+              placeholder="Ex: 3000000"
+            />
+          </div>
 
-  {/* Proprietário */}
-  <div className="space-y-1">
-    <label className="text-xs font-semibold text-neutral-600">
-      Nome do proprietário
-    </label>
-    <input
-      name="proprietario"
-      defaultValue={proprietario}
-      className="h-11 w-full rounded-xl border border-neutral-200 bg-white px-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
-      placeholder="Ex: João"
-    />
-  </div>
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-neutral-600">
+              Nome do proprietário
+            </label>
+            <input
+              name="proprietario"
+              defaultValue={proprietario}
+              className="h-11 w-full rounded-xl border border-neutral-200 bg-white px-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
+              placeholder="Ex: João"
+            />
+          </div>
 
-  {/* Telefone */}
-  <div className="space-y-1">
-    <label className="text-xs font-semibold text-neutral-600">
-      Telefone
-    </label>
-    <input
-      name="telefone"
-      defaultValue={telefone}
-      className="h-11 w-full rounded-xl border border-neutral-200 bg-white px-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
-      placeholder="Ex: 21 99999-9999"
-    />
-  </div>
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-neutral-600">
+              Telefone
+            </label>
+            <input
+              name="telefone"
+              defaultValue={telefone}
+              className="h-11 w-full rounded-xl border border-neutral-200 bg-white px-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
+              placeholder="Ex: 21 99999-9999"
+            />
+          </div>
 
-  {/* Condomínio */}
-  <div className="space-y-1">
-    <label className="text-xs font-semibold text-neutral-600">
-      Nome do condomínio
-    </label>
-    <input
-      name="condominioNome"
-      defaultValue={condominioNome}
-      className="h-11 w-full rounded-xl border border-neutral-200 bg-white px-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
-      placeholder="Ex: Bela Vista"
-    />
-  </div>
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-neutral-600">
+              Nome do condomínio
+            </label>
+            <input
+              name="condominioNome"
+              defaultValue={condominioNome}
+              className="h-11 w-full rounded-xl border border-neutral-200 bg-white px-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
+              placeholder="Ex: Bela Vista"
+            />
+          </div>
 
-  {/* Bairro */}
-  <div className="space-y-1">
-    <label className="text-xs font-semibold text-neutral-600">
-      Bairro
-    </label>
-    <input
-      name="bairro"
-      defaultValue={bairro}
-      className="h-11 w-full rounded-xl border border-neutral-200 bg-white px-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
-      placeholder="Ex: Itaipava"
-    />
-  </div>
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-neutral-600">
+              Bairro
+            </label>
+            <input
+              name="bairro"
+              defaultValue={bairro}
+              className="h-11 w-full rounded-xl border border-neutral-200 bg-white px-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
+              placeholder="Ex: Itaipava"
+            />
+          </div>
 
-  {/* Código */}
-  <div className="space-y-1">
-    <label className="text-xs font-semibold text-neutral-600">
-      Código do imóvel
-    </label>
-    <input
-      name="codigo"
-      defaultValue={codigo}
-      className="h-11 w-full rounded-xl border border-neutral-200 bg-white px-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
-      placeholder="Ex: AR-102"
-    />
-  </div>
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-neutral-600">
+              Código do imóvel
+            </label>
+            <input
+              name="codigo"
+              defaultValue={codigo}
+              className="h-11 w-full rounded-xl border border-neutral-200 bg-white px-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
+              placeholder="Ex: AR-102"
+            />
+          </div>
 
-  {/* Endereço */}
-  <div className="space-y-1 md:col-span-2">
-    <label className="text-xs font-semibold text-neutral-600">
-      Endereço do imóvel (interno)
-    </label>
-    <input
-      name="endereco"
-      defaultValue={endereco}
-      className="h-11 w-full rounded-xl border border-neutral-200 bg-white px-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
-      placeholder="Ex: Estrada União Indústria, 9500"
-    />
-  </div>
+          <div className="space-y-1 md:col-span-2">
+            <label className="text-xs font-semibold text-neutral-600">
+              Endereço do imóvel (interno)
+            </label>
+            <input
+              name="endereco"
+              defaultValue={endereco}
+              className="h-11 w-full rounded-xl border border-neutral-200 bg-white px-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
+              placeholder="Ex: Estrada União Indústria, 9500"
+            />
+          </div>
 
-  {/* Corretora */}
-  <div className="space-y-1">
-    <label className="text-xs font-semibold text-neutral-600">
-      Corretora (captação)
-    </label>
-    <select
-      name="corretora"
-      defaultValue={corretora}
-      className="h-11 w-full rounded-xl border border-neutral-200 bg-white px-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
-    >
-      <option value="">Todas</option>
-      <option value="Lidiane Farias">Lidiane Farias</option>
-      <option value="Ana Andrade">Ana Andrade</option>
-      <option value="Claudia Raposo">Claudia Raposo</option>
-    </select>
-  </div>
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-neutral-600">
+              Corretora (captação)
+            </label>
+            <input
+              name="corretora"
+              defaultValue={corretora}
+              className="h-11 w-full rounded-xl border border-neutral-200 bg-white px-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
+              placeholder="Digite o nome da corretora"
+            />
+          </div>
 
-  {/* Botão */}
-  <div className="flex items-end justify-end md:col-span-4">
-    <button
-      type="submit"
-      className="h-11 rounded-full bg-green-700 px-8 text-sm font-semibold text-white shadow-sm transition hover:bg-green-800"
-    >
-      Aplicar filtros
-    </button>
-  </div>
-</form>
+          <div className="flex items-end justify-end md:col-span-4">
+            <button
+              type="submit"
+              className="h-11 rounded-full bg-green-700 px-8 text-sm font-semibold text-white shadow-sm transition hover:bg-green-800"
+            >
+              Aplicar filtros
+            </button>
+          </div>
+        </form>
 
         {hasFilters && (
           <div className="overflow-x-auto rounded-2xl border">
@@ -366,13 +340,13 @@ export default async function AdminImoveisPage({
                   <th className="px-4 py-3 text-left">Nome do condomínio</th>
                   <th className="px-4 py-3 text-left">Bairro</th>
                   <th className="px-4 py-3 text-left">Código do imóvel</th>
-                  <th className="px-4 py-3 text-left">Endereço (interno)</th> 
+                  <th className="px-4 py-3 text-left">Endereço (interno)</th>
                   <th className="px-4 py-3 text-left">Corretora</th>
                 </tr>
               </thead>
 
               <tbody>
-                {imoveis.map((imovel) => (
+                {imoveisSafe.map((imovel) => (
                   <tr key={imovel.id} className="border-t hover:bg-neutral-50">
                     <td className="px-4 py-3">{imovel.tipo ?? "—"}</td>
                     <td className="px-4 py-3">
@@ -385,16 +359,14 @@ export default async function AdminImoveisPage({
                     <td className="px-4 py-3">{imovel.condominioNome ?? "—"}</td>
                     <td className="px-4 py-3">{imovel.neighborhood ?? "—"}</td>
                     <td className="px-4 py-3">{imovel.codigo ?? "—"}</td>
-                    <td className="px-4 py-3">{imovel.endereco ?? "—"}</td> 
-                    <td className="px-4 py-3">
-  {imovel.corretoraCaptacao ?? "—"}
-</td>
+                    <td className="px-4 py-3">{imovel.endereco ?? "—"}</td>
+                    <td className="px-4 py-3">{imovel.corretoraCaptacao ?? "—"}</td>
                   </tr>
                 ))}
 
                 {imoveis.length === 0 && (
                   <tr>
-                    <td colSpan={8} className="px-4 py-10 text-center text-neutral-500">
+                    <td colSpan={9} className="px-4 py-10 text-center text-neutral-500">
                       Nenhum imóvel encontrado com esses filtros.
                     </td>
                   </tr>
@@ -405,7 +377,6 @@ export default async function AdminImoveisPage({
         )}
       </section>
 
-      {/* LISTA EM CARDS */}
       {imoveis.length === 0 ? (
         <div className="rounded-2xl border p-6">
           <p className="text-neutral-600">Nenhum imóvel cadastrado ainda.</p>
@@ -418,13 +389,12 @@ export default async function AdminImoveisPage({
         </div>
       ) : (
         <div className="grid md:grid-cols-2 gap-4">
-          {imoveis.map((imovel) => {
-            const coverUrl = imovel.coverUrl;
-            const hasCover = imovel.hasCover;
+          {imoveisSafe.map((imovel) => {
+            const coverUrl = (imovel as any).coverUrl;
+const hasCover = (imovel as any).hasCover;
 
             return (
               <div key={imovel.id} className="rounded-2xl border p-4 space-y-3">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={coverUrl}
                   alt={imovel.title}
@@ -436,8 +406,8 @@ export default async function AdminImoveisPage({
                     <h2 className="text-xl font-semibold">{imovel.title}</h2>
                     {hasCover && (
                       <div className="flex flex-wrap gap-2">
-  <FeaturedToggle id={imovel.id} initialFeatured={imovel.featured} />
-</div>
+                        <FeaturedToggle id={imovel.id} initialFeatured={imovel.featured} />
+                      </div>
                     )}
                   </div>
 
@@ -446,56 +416,58 @@ export default async function AdminImoveisPage({
                   </p>
 
                   {imovel.createdAt ? (
-  <p className="text-xs text-neutral-400">
-    Cadastrado em{" "}
-    {new Date(imovel.createdAt).toLocaleDateString("pt-BR")}
-  </p>
-) : null}
+                    <p className="text-xs text-neutral-400">
+                      Cadastrado em{" "}
+                      {new Date(imovel.createdAt).toLocaleDateString("pt-BR")}
+                    </p>
+                  ) : null}
 
                   {imovel.cep && <p className="text-neutral-500">CEP: {imovel.cep}</p>}
 
                   {typeof imovel.price === "number" && (
-                    <p className="font-semibold">R$ {imovel.price.toLocaleString("pt-BR")}</p>
+                    <p className="font-semibold">
+                      R$ {imovel.price.toLocaleString("pt-BR")}
+                    </p>
                   )}
                 </div>
 
                 <div className="flex flex-wrap gap-2">
-  <ToggleAtivoButton id={imovel.id} ativo={imovel.ativo} />
+                  <ToggleAtivoButton id={imovel.id} ativo={imovel.ativo} />
 
-  <Link
-    href={`/admin/imoveis/${imovel.id}`}
-    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border hover:bg-neutral-50 text-xs font-semibold"
-  >
-    <Image className="h-4 w-4" />
-    Fotos
-  </Link>
+                  <Link
+                    href={`/admin/imoveis/${imovel.id}`}
+                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border hover:bg-neutral-50 text-xs font-semibold"
+                  >
+                    <Image className="h-4 w-4" />
+                    Fotos
+                  </Link>
 
-  <Link
-    href={`/admin/imoveis/${imovel.id}/editar`}
-    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border hover:bg-neutral-50 text-xs font-semibold"
-  >
-    <Pencil className="h-4 w-4" />
-    Editar
-  </Link>
+                  <Link
+                    href={`/admin/imoveis/${imovel.id}/editar`}
+                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border hover:bg-neutral-50 text-xs font-semibold"
+                  >
+                    <Pencil className="h-4 w-4" />
+                    Editar
+                  </Link>
 
-  <Link
-    href={`/admin/imoveis/${imovel.id}/imprimir`}
-    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border hover:bg-neutral-50 text-xs font-semibold"
-    target="_blank"
-  >
-    <Printer className="h-4 w-4" />
-    Imprimir
-  </Link>
+                  <Link
+                    href={`/admin/imoveis/${imovel.id}/imprimir`}
+                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border hover:bg-neutral-50 text-xs font-semibold"
+                    target="_blank"
+                  >
+                    <Printer className="h-4 w-4" />
+                    Imprimir
+                  </Link>
 
-  <Link
-    href={`/imovel/${imovel.slug}`}
-    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border hover:bg-neutral-50 text-xs font-semibold"
-    target="_blank"
-  >
-    <ExternalLink className="h-4 w-4" />
-    Site
-  </Link>
-</div>
+                  <Link
+                    href={`/imovel/${imovel.slug}`}
+                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border hover:bg-neutral-50 text-xs font-semibold"
+                    target="_blank"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    Site
+                  </Link>
+                </div>
               </div>
             );
           })}

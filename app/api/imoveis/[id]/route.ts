@@ -52,8 +52,6 @@ export async function PATCH(
   try {
     const body = await req.json();
 
-    // compatibilidade: PhotosUploader antigo manda { image: url|null }
-    // -> converte para coverPhotoId usando o Photo.url
     let coverPhotoId: string | null | undefined = undefined;
     if ("image" in body) {
       const url = body?.image ? String(body.image) : "";
@@ -146,16 +144,13 @@ export async function DELETE(
 
   try {
     await prisma.$transaction(async (tx) => {
-      // 1) remove referência da capa (evita FK quebrar)
       await tx.imovel.update({
         where: { id },
         data: { coverPhotoId: null },
       });
 
-      // 2) apaga fotos
       await tx.photo.deleteMany({ where: { imovelId: id } });
 
-      // 3) apaga o imóvel
       await tx.imovel.delete({ where: { id } });
     });
 

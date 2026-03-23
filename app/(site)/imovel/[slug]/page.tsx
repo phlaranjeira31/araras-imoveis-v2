@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     descricao: true,
     coverPhotoId: true,
     photos: {
-      take: 1, // ✅ só 1 foto, bem leve
+      take: 1, 
       orderBy: { createdAt: "desc" },
       select: { id: true, url: true },
     },

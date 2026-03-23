@@ -93,8 +93,7 @@ export default function CorretorasSection() {
                     ))}
                   </div>
                 ) : null}
-
-                {/* ✅ ADICIONADO: botão WhatsApp por corretora */}
+                
                 <a
                   href={waLink}
                   target="_blank"

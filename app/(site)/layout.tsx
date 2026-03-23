@@ -11,7 +11,6 @@ export default function SiteLayout({
   children: React.ReactNode;
 }) {
   return (
-    // ✅ ADIÇÃO: envolve o layout inteiro
     <WhatsAppProvider>
       <div className="relative min-h-screen flex flex-col">
         {/* FUNDO GLOBAL (degradê suave) */}

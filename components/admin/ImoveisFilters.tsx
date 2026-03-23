@@ -23,6 +23,7 @@ export default function ImoveisFilters({ tipos }: Props) {
       telefone: get("telefone"),
       min: get("min"),
       max: get("max"),
+      corretoraCaptacao: get("corretoraCaptacao"), // ✅ ADICIONADO
     };
   }, [searchParams]);
 
@@ -140,6 +141,20 @@ export default function ImoveisFilters({ tipos }: Props) {
             placeholder="Ex: 3000000"
             value={form.max}
             onChange={(e) => setField("max", e.target.value)}
+          />
+        </div>
+
+        {/* 🔥 NOVO CAMPO (CORRETORA LIVRE) */}
+        <div className="flex flex-col gap-1">
+          <label className="text-xs font-semibold text-slate-600">
+            Corretora (captação)
+          </label>
+          <input
+            type="text"
+            className="h-10 rounded-xl border px-3 text-sm"
+            placeholder="Digite o nome da corretora"
+            value={form.corretoraCaptacao}
+            onChange={(e) => setField("corretoraCaptacao", e.target.value)}
           />
         </div>
       </div>
