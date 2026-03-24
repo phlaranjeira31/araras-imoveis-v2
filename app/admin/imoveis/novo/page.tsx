@@ -211,9 +211,6 @@ export default function NovoImovelPage() {
                   onChange={(e) => setCep(e.target.value)}
                   placeholder="Ex: 25650-000"
                 />
-                <p className="mt-1 text-xs text-slate-500">
-                  (Opcional) Depois vamos usar isso pra localizar no mapa.
-                </p>
               </div>
 
               <div>
