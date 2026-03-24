@@ -353,6 +353,17 @@ export default function NovoImovelPage() {
               />
             </div>
 
+            <div>
+              <label className="text-sm font-medium">Condomínio (R$)</label>
+              <input
+                className="mt-1 w-full rounded-xl border px-3 py-2 outline-none focus:ring-2"
+                value={condominio}
+                onChange={(e) => setCondominio(onlyDigits(e.target.value))}
+                inputMode="numeric"
+                placeholder="Ex: 3000"
+              />
+            </div>
+
             <div className="flex items-end gap-3">
               <input
                 id="mobiliado"
@@ -364,19 +375,6 @@ export default function NovoImovelPage() {
               <label htmlFor="mobiliado" className="text-sm font-medium">
                 Mobiliado
               </label>
-            </div>
-
-            
-
-            <div>
-              <label className="text-sm font-medium">Condomínio (R$)</label>
-              <input
-                className="mt-1 w-full rounded-xl border px-3 py-2 outline-none focus:ring-2"
-                value={condominio}
-                onChange={(e) => setCondominio(onlyDigits(e.target.value))}
-                inputMode="numeric"
-                placeholder="Ex: 3000"
-              />
             </div>
 
             <div>
