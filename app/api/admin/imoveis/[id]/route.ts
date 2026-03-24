@@ -28,6 +28,20 @@ export async function PATCH(
     const corretoraCaptacao =
       !corretoraRaw || corretoraRaw === "Todas" ? null : corretoraRaw;
 
+    // ✅ ADICIONADO (condomínio)
+    const condominioRaw = String(body?.condominio ?? "").trim();
+    const condominio =
+      condominioRaw === ""
+        ? null
+        : Number(String(condominioRaw).replace(/[^\d]/g, ""));
+
+    // ✅ ADICIONADO (IPTU)
+    const iptuRaw = String(body?.iptu ?? "").trim();
+    const iptu =
+      iptuRaw === ""
+        ? null
+        : Number(String(iptuRaw).replace(/[^\d]/g, ""));
+
     const data: any = {
       title: String(body?.title ?? "").trim() || null,
       slug: String(body?.slug ?? "").trim() || null,
@@ -45,6 +59,10 @@ export async function PATCH(
 
       // ✅ ADICIONADO (salva no banco)
       corretoraCaptacao,
+
+      // ✅ ADICIONADO (salva condomínio e IPTU)
+      condominio,
+      iptu,
     };
 
     if (priceRaw === "") {

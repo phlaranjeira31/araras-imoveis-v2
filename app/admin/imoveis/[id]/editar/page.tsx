@@ -54,9 +54,9 @@ export default async function EditarImovelPage({ params }: PageProps) {
           condominioNome: (imovel as any).condominioNome ?? "",
           codigo: (imovel as any).codigo ?? "",
           endereco: (imovel as any).endereco ?? "",
-
-          // ✅ ADICIONADO AGORA
           corretoraCaptacao: (imovel as any).corretoraCaptacao ?? "",
+          condominio: imovel.condominio?.toString() ?? "",
+iptu: imovel.iptu?.toString() ?? "",
         }}
       />
     </main>

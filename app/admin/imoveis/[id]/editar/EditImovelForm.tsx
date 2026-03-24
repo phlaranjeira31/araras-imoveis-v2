@@ -19,11 +19,24 @@ type DefaultValues = {
   codigo: string;
   endereco: string;
 
-  // ✅ ADICIONADO AGORA
   corretoraCaptacao: string;
+
+  condominio: string;
+  iptu: string;
 };
 
 const CORRETORAS = ["Lidiane Farias", "Ana Andrade", "Claudia Raposo", "Elis"];
+
+// ✅ FUNÇÃO DE MÁSCARA
+function formatCurrencyBRL(value: string) {
+  const digits = value.replace(/\D/g, "");
+  const number = Number(digits) / 100;
+
+  return number.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+}
 
 export default function EditImovelForm({
   id,
@@ -36,6 +49,19 @@ export default function EditImovelForm({
   const [loading, setLoading] = useState(false);
   const [okMsg, setOkMsg] = useState("");
   const [errMsg, setErrMsg] = useState("");
+
+  // ✅ STATES COM MÁSCARA
+  const [priceMasked, setPriceMasked] = useState(
+    defaultValues.price ? formatCurrencyBRL(defaultValues.price) : ""
+  );
+
+  const [condominioMasked, setCondominioMasked] = useState(
+    defaultValues.condominio ? formatCurrencyBRL(defaultValues.condominio) : ""
+  );
+
+  const [iptuMasked, setIptuMasked] = useState(
+    defaultValues.iptu ? formatCurrencyBRL(defaultValues.iptu) : ""
+  );
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -57,7 +83,10 @@ export default function EditImovelForm({
       cep: String(form.get("cep") ?? "").trim(),
       tipo: String(form.get("tipo") ?? "").trim(),
       purpose: String(form.get("purpose") ?? "").trim(),
-      price: String(form.get("price") ?? "").trim(),
+
+      // ✅ ENVIA VALOR LIMPO
+      price: priceMasked.replace(/\D/g, ""),
+
       descricao: String(form.get("descricao") ?? "").trim(),
       proprietarioNome: String(form.get("proprietarioNome") ?? "").trim(),
       proprietarioTelefone: String(form.get("proprietarioTelefone") ?? "").trim(),
@@ -65,6 +94,10 @@ export default function EditImovelForm({
       codigo: String(form.get("codigo") ?? "").trim(),
       endereco: String(form.get("endereco") ?? "").trim(),
       corretoraCaptacao,
+
+      // ✅ ENVIA LIMPO
+      condominio: condominioMasked.replace(/\D/g, ""),
+      iptu: iptuMasked.replace(/\D/g, ""),
     };
 
     try {
@@ -122,13 +155,22 @@ export default function EditImovelForm({
           placeholder="ex: comprar | alugar"
         />
 
-        <Field
-          label="Preço (apenas números)"
-          name="price"
-          defaultValue={defaultValues.price}
-          inputMode="numeric"
-          placeholder="ex: 2800000"
-        />
+        {/* ✅ PREÇO COM MÁSCARA */}
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-semibold text-neutral-700">
+            Preço
+          </label>
+          <input
+            value={priceMasked}
+            onChange={(e) => {
+              const digits = e.target.value.replace(/\D/g, "");
+              setPriceMasked(digits ? formatCurrencyBRL(digits) : "");
+            }}
+            inputMode="numeric"
+            placeholder="Ex: R$ 2.800.000,00"
+            className="h-11 rounded-2xl border px-3 text-sm"
+          />
+        </div>
 
         <Field
           label="Código do imóvel"
@@ -174,6 +216,40 @@ export default function EditImovelForm({
               <option key={c} value={c} />
             ))}
           </datalist>
+        </div>
+
+        {/* ✅ CONDOMÍNIO COM MÁSCARA */}
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-semibold text-neutral-700">
+            Condomínio
+          </label>
+          <input
+            value={condominioMasked}
+            onChange={(e) => {
+              const digits = e.target.value.replace(/\D/g, "");
+              setCondominioMasked(digits ? formatCurrencyBRL(digits) : "");
+            }}
+            inputMode="numeric"
+            placeholder="Ex: R$ 700,00"
+            className="h-11 rounded-2xl border px-3 text-sm"
+          />
+        </div>
+
+        {/* ✅ IPTU COM MÁSCARA */}
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-semibold text-neutral-700">
+            IPTU
+          </label>
+          <input
+            value={iptuMasked}
+            onChange={(e) => {
+              const digits = e.target.value.replace(/\D/g, "");
+              setIptuMasked(digits ? formatCurrencyBRL(digits) : "");
+            }}
+            inputMode="numeric"
+            placeholder="Ex: R$ 2.600,00"
+            className="h-11 rounded-2xl border px-3 text-sm"
+          />
         </div>
       </div>
 
