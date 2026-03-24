@@ -231,6 +231,28 @@ export default function NovoImovelPage() {
                 </select>
               </div>
 
+              {/* ✅ ADICIONADO: NOME DO CONDOMÍNIO */}
+            <div>
+              <label className="text-sm font-medium">Nome do condomínio</label>
+              <input
+                className="mt-1 w-full rounded-xl border px-3 py-2 outline-none focus:ring-2"
+                value={condominioNome}
+                onChange={(e) => setCondominioNome(e.target.value)}
+                placeholder="Ex: Bela Vista"
+              />
+            </div>
+
+            {/* ✅ ADICIONADO: ENDEREÇO INTERNO (somente admin) */}
+            <div>
+              <label className="text-sm font-medium">Endereço do imóvel</label>
+              <input
+                className="mt-1 w-full rounded-xl border px-3 py-2 outline-none focus:ring-2"
+                value={endereco}
+                onChange={(e) => setEndereco(e.target.value)}
+                placeholder="Ex: Estrada União Indústria, 9500, Itaipava"
+              />
+            </div>
+
               <div>
                 <label className="text-sm font-medium">Preço</label>
                 <input
@@ -357,28 +379,6 @@ export default function NovoImovelPage() {
                 onChange={(e) => setCondominio(onlyDigits(e.target.value))}
                 inputMode="numeric"
                 placeholder="Ex: 3000"
-              />
-            </div>
-
-            {/* ✅ ADICIONADO: NOME DO CONDOMÍNIO */}
-            <div>
-              <label className="text-sm font-medium">Nome do condomínio</label>
-              <input
-                className="mt-1 w-full rounded-xl border px-3 py-2 outline-none focus:ring-2"
-                value={condominioNome}
-                onChange={(e) => setCondominioNome(e.target.value)}
-                placeholder="Ex: Bela Vista"
-              />
-            </div>
-
-            {/* ✅ ADICIONADO: ENDEREÇO INTERNO (somente admin) */}
-            <div>
-              <label className="text-sm font-medium">Endereço do imóvel</label>
-              <input
-                className="mt-1 w-full rounded-xl border px-3 py-2 outline-none focus:ring-2"
-                value={endereco}
-                onChange={(e) => setEndereco(e.target.value)}
-                placeholder="Ex: Estrada União Indústria, 9500, Itaipava"
               />
             </div>
 
