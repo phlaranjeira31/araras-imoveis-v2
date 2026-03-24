@@ -28,6 +28,7 @@ model Imovel {
   lat                  Float?
   lng                  Float?
   price                Int?
+  priceRent            Int?
   slug                 String   @unique
   coverPhotoId         String?
   createdAt            DateTime @default(now())

@@ -3,6 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import MapPicker from "@/components/MapPickerClientOnly";
+import {
+  FileText,
+  Home,
+  User,
+  BadgeDollarSign,
+  MapPinned,
+} from "lucide-react";
 
 function onlyDigits(s: string) {
   return s.replace(/\D/g, "");
@@ -10,9 +17,10 @@ function onlyDigits(s: string) {
 
 function formatMoneyBRLFromDigits(digits: string) {
   // digits = "2500000" -> "R$ 2.500.000"
-  const n = Number(digits || "0");
+  if (!digits) return "";
+  const n = Number(digits);
   if (!Number.isFinite(n)) return "";
-  return n.toLocaleString("pt-BR");
+  return `R$ ${n.toLocaleString("pt-BR")}`;
 }
 
 const CORRETORAS = [
@@ -34,11 +42,12 @@ export default function NovoImovelPage() {
 
   // finalidade
   const [purpose, setPurpose] = useState<
-    "comprar" | "alugar" | "temporada" | "lancamentos" | "todos"
+    "comprar" | "alugar" | "temporada" | "lancamentos" | "todos" | "alugar_comprar"
   >("todos");
 
   // preço (guardamos só dígitos)
   const [priceDigits, setPriceDigits] = useState("");
+  const [priceRentDigits, setPriceRentDigits] = useState("");
 
   // mapa
   const [lat, setLat] = useState<number | null>(null);
@@ -92,6 +101,7 @@ export default function NovoImovelPage() {
         negocio: purpose,
 
         price: priceDigits ? Number(priceDigits) : null,
+        priceRent: priceRentDigits ? Number(priceRentDigits) : null,
         lat,
         lng,
 
@@ -165,7 +175,10 @@ export default function NovoImovelPage() {
       <form onSubmit={onSubmit} className="mt-8 space-y-8">
         {/* BÁSICOS */}
         <section className="rounded-2xl border bg-white p-6 shadow-soft">
-          <h2 className="text-lg font-semibold">Informações principais</h2>
+          <div className="flex items-center gap-2 border-b pb-3">
+            <FileText className="h-5 w-5 text-primary" />
+            <h2 className="text-lg font-semibold">Informações Principais</h2>
+          </div>
 
           <div className="mt-5 grid grid-cols-1 gap-4">
             <div>
@@ -225,39 +238,51 @@ export default function NovoImovelPage() {
                   <option value="alugar">Alugar</option>
                   <option value="temporada">Temporada</option>
                   <option value="lancamentos">Lançamentos</option>
+                  <option value="alugar_comprar">Alugar/Comprar</option>
                 </select>
               </div>
 
               {/* ✅ ADICIONADO: NOME DO CONDOMÍNIO */}
-            <div>
-              <label className="text-sm font-medium">Nome do condomínio</label>
-              <input
-                className="mt-1 w-full rounded-xl border px-3 py-2 outline-none focus:ring-2"
-                value={condominioNome}
-                onChange={(e) => setCondominioNome(e.target.value)}
-                placeholder="Ex: Bela Vista"
-              />
-            </div>
+              <div>
+                <label className="text-sm font-medium">Nome do Condomínio</label>
+                <input
+                  className="mt-1 w-full rounded-xl border px-3 py-2 outline-none focus:ring-2"
+                  value={condominioNome}
+                  onChange={(e) => setCondominioNome(e.target.value)}
+                  placeholder="Ex: Bela Vista"
+                />
+              </div>
 
-            {/* ✅ ADICIONADO: ENDEREÇO INTERNO (somente admin) */}
-            <div>
-              <label className="text-sm font-medium">Endereço do imóvel</label>
-              <input
-                className="mt-1 w-full rounded-xl border px-3 py-2 outline-none focus:ring-2"
-                value={endereco}
-                onChange={(e) => setEndereco(e.target.value)}
-                placeholder="Ex: Estrada União Indústria, 9500, Itaipava"
-              />
-            </div>
+              {/* ✅ ADICIONADO: ENDEREÇO INTERNO (somente admin) */}
+              <div>
+                <label className="text-sm font-medium">Endereço do Imóvel</label>
+                <input
+                  className="mt-1 w-full rounded-xl border px-3 py-2 outline-none focus:ring-2"
+                  value={endereco}
+                  onChange={(e) => setEndereco(e.target.value)}
+                  placeholder="Ex: Estrada União Indústria, 9500, Itaipava"
+                />
+              </div>
 
               <div>
                 <label className="text-sm font-medium">Preço</label>
                 <input
                   className="mt-1 w-full rounded-xl border px-3 py-2 outline-none focus:ring-2"
-                  value={priceDigits ? `R$ ${formatMoneyBRLFromDigits(priceDigits)}` : ""}
+                  value={formatMoneyBRLFromDigits(priceDigits)}
                   onChange={(e) => setPriceDigits(onlyDigits(e.target.value))}
                   inputMode="numeric"
                   placeholder="Ex: R$ 2.500.000"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium">Preço Locação</label>
+                <input
+                  className="mt-1 w-full rounded-xl border px-3 py-2 outline-none focus:ring-2"
+                  value={formatMoneyBRLFromDigits(priceRentDigits)}
+                  onChange={(e) => setPriceRentDigits(onlyDigits(e.target.value))}
+                  inputMode="numeric"
+                  placeholder="Ex: R$ 5.000"
                 />
               </div>
             </div>
@@ -266,7 +291,10 @@ export default function NovoImovelPage() {
 
         {/* DETALHES */}
         <section className="rounded-2xl border bg-white p-6 shadow-soft">
-          <h2 className="text-lg font-semibold">Detalhes do imóvel</h2>
+          <div className="flex items-center gap-2 border-b pb-3">
+            <Home className="h-5 w-5 text-primary" />
+            <h2 className="text-lg font-semibold">Detalhes do Imóvel</h2>
+          </div>
 
           <div className="mt-5 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
@@ -332,7 +360,7 @@ export default function NovoImovelPage() {
             </div>
 
             <div>
-              <label className="text-sm font-medium">Área construída (m²)</label>
+              <label className="text-sm font-medium">Área Construída (m²)</label>
               <input
                 className="mt-1 w-full rounded-xl border px-3 py-2 outline-none focus:ring-2"
                 value={areaConstruida}
@@ -343,7 +371,7 @@ export default function NovoImovelPage() {
             </div>
 
             <div>
-              <label className="text-sm font-medium">Área do terreno (m²)</label>
+              <label className="text-sm font-medium">Área do Terreno (m²)</label>
               <input
                 className="mt-1 w-full rounded-xl border px-3 py-2 outline-none focus:ring-2"
                 value={areaTerreno}
@@ -390,7 +418,7 @@ export default function NovoImovelPage() {
 
             {/* ✅ ADICIONADO: CÓDIGO DO IMÓVEL (ÚNICO) */}
             <div>
-              <label className="text-sm font-medium">Código do imóvel (único)</label>
+              <label className="text-sm font-medium">Código do Imóvel (único)</label>
               <input
                 className="mt-1 w-full rounded-xl border px-3 py-2 outline-none focus:ring-2"
                 value={codigo}
@@ -399,29 +427,32 @@ export default function NovoImovelPage() {
               />
             </div>
           </div>
-<br></br>
-          <div>
-  <label className="block text-sm font-medium">
-    Corretora (captação)
-  </label>
+          <br></br>
+          <div className="rounded-2xl border border-neutral-100 bg-neutral-50/60 p-4">
+            <label className="block text-sm font-medium">
+              Corretora (captação)
+            </label>
 
-  <input
-  type="text"
-  name="corretoraCaptacao"
-  list="lista-corretoras-captacao"
-  className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
-  placeholder="Digite ou selecione a corretora"
-/>
+            <input
+              type="text"
+              name="corretoraCaptacao"
+              list="lista-corretoras-captacao"
+              className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
+              placeholder="Digite ou selecione a corretora"
+            />
 
-<datalist id="lista-corretoras-captacao">
-  {CORRETORAS.map((c) => (
-    <option key={c} value={c} />
-  ))}
-</datalist>
-</div>
+            <datalist id="lista-corretoras-captacao">
+              {CORRETORAS.map((c) => (
+                <option key={c} value={c} />
+              ))}
+            </datalist>
+          </div>
 
-          <div className="mt-5">
-            <label className="text-sm font-medium">Descrição</label>
+          <div className="mt-5 rounded-2xl border border-neutral-100 bg-neutral-50/60 p-4">
+            <div className="mb-3 flex items-center gap-2">
+              <BadgeDollarSign className="h-5 w-5 text-primary" />
+              <label className="text-sm font-semibold">Descrição</label>
+            </div>
             <textarea
               className="mt-1 w-full min-h-[140px] rounded-xl border px-3 py-2 outline-none focus:ring-2"
               value={descricao}
@@ -433,7 +464,10 @@ export default function NovoImovelPage() {
 
         {/* ✅ ADICIONADO: ÁREA DO PROPRIETÁRIO */}
         <section className="rounded-2xl border bg-white p-6 shadow-soft">
-          <h2 className="text-lg font-semibold">Área do proprietário</h2>
+          <div className="flex items-center gap-2 border-b pb-3">
+            <User className="h-5 w-5 text-primary" />
+            <h2 className="text-lg font-semibold">Área do Proprietário</h2>
+          </div>
 
           <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -480,6 +514,11 @@ export default function NovoImovelPage() {
 
         {/* MAPA */}
         <section className="rounded-2xl border bg-white p-6 shadow-soft">
+          <div className="mb-4 flex items-center gap-2 border-b pb-3">
+            <MapPinned className="h-5 w-5 text-primary" />
+            <h2 className="text-lg font-semibold">Mapa do imóvel</h2>
+          </div>
+
           <MapPicker
             lat={lat}
             lng={lng}

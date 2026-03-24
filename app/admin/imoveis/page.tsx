@@ -1,9 +1,24 @@
+
 import Link from "next/link";
 import PrintButton from "@/components/PrintButton";
 import { prisma } from "@/lib/prisma";
-import { Plus } from "lucide-react";
+import {
+  Plus,
+  Image,
+  Pencil,
+  Printer,
+  ExternalLink,
+  Home,
+  DollarSign,
+  User,
+  Phone,
+  Building,
+  MapPin,
+  Hash,
+  FileText,
+  Briefcase,
+} from "lucide-react";
 import ToggleAtivoButton from "./ToggleAtivoButton";
-import { Image, Pencil, Printer, ExternalLink } from "lucide-react";
 import FeaturedToggle from "@/components/admin/FeaturedToggle";
 
 export default async function AdminImoveisPage({
@@ -139,8 +154,8 @@ export default async function AdminImoveisPage({
       im.coverPhotoId && coverUrl
         ? [{ id: im.coverPhotoId, url: coverUrl }]
         : first
-        ? [{ id: first.id, url: first.url }]
-        : [];
+          ? [{ id: first.id, url: first.url }]
+          : [];
 
     return {
       ...im,
@@ -174,7 +189,8 @@ export default async function AdminImoveisPage({
       <section className="rounded-3xl border bg-white/80 backdrop-blur-sm p-6 space-y-6 shadow-sm">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-neutral-900">
+            <h2 className="flex items-center gap-2 text-xl font-semibold text-neutral-900">
+              <Home className="h-5 w-5 text-green-700" />
               Filtro / Planilha de Imóveis
             </h2>
             <p className="text-neutral-500 text-sm">
@@ -189,7 +205,7 @@ export default async function AdminImoveisPage({
               href="/admin/imoveis"
               className="px-4 py-2 rounded-full border hover:bg-neutral-50 text-sm"
             >
-              Limpar filtros
+              Limpar Filtros
             </Link>
           </div>
         </div>
@@ -200,122 +216,152 @@ export default async function AdminImoveisPage({
         >
           <div className="space-y-1">
             <label className="text-xs font-semibold text-neutral-600">
-              Tipo de imóvel
+              Tipo de Imóvel
             </label>
-            <input
-              name="tipo"
-              defaultValue={tipo}
-              className="h-11 w-full rounded-xl border border-neutral-200 bg-white px-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
-              placeholder="Ex: casa, apartamento..."
-            />
+            <div className="relative">
+              <Home className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+              <input
+                name="tipo"
+                defaultValue={tipo}
+                className="h-11 w-full rounded-xl border border-neutral-200 bg-white pl-10 pr-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
+                placeholder="Ex: casa, apartamento..."
+              />
+            </div>
           </div>
 
           <div className="space-y-1">
             <label className="text-xs font-semibold text-neutral-600">
               Valor (mín.)
             </label>
-            <input
-              name="valorMin"
-              defaultValue={valorMin}
-              className="h-11 w-full rounded-xl border border-neutral-200 bg-white px-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
-              placeholder="Ex: 500000"
-            />
+            <div className="relative">
+              <DollarSign className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+              <input
+                name="valorMin"
+                defaultValue={valorMin}
+                className="h-11 w-full rounded-xl border border-neutral-200 bg-white pl-10 pr-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
+                placeholder="Ex: 500000"
+              />
+            </div>
           </div>
 
           <div className="space-y-1">
             <label className="text-xs font-semibold text-neutral-600">
               Valor (máx.)
             </label>
-            <input
-              name="valorMax"
-              defaultValue={valorMax}
-              className="h-11 w-full rounded-xl border border-neutral-200 bg-white px-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
-              placeholder="Ex: 3000000"
-            />
+            <div className="relative">
+              <DollarSign className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+              <input
+                name="valorMax"
+                defaultValue={valorMax}
+                className="h-11 w-full rounded-xl border border-neutral-200 bg-white pl-10 pr-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
+                placeholder="Ex: 3000000"
+              />
+            </div>
           </div>
 
           <div className="space-y-1">
             <label className="text-xs font-semibold text-neutral-600">
-              Nome do proprietário
+              Nome do Proprietário
             </label>
-            <input
-              name="proprietario"
-              defaultValue={proprietario}
-              className="h-11 w-full rounded-xl border border-neutral-200 bg-white px-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
-              placeholder="Ex: João"
-            />
+            <div className="relative">
+              <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+              <input
+                name="proprietario"
+                defaultValue={proprietario}
+                className="h-11 w-full rounded-xl border border-neutral-200 bg-white pl-10 pr-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
+                placeholder="Ex: João"
+              />
+            </div>
           </div>
 
           <div className="space-y-1">
             <label className="text-xs font-semibold text-neutral-600">
               Telefone
             </label>
-            <input
-              name="telefone"
-              defaultValue={telefone}
-              className="h-11 w-full rounded-xl border border-neutral-200 bg-white px-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
-              placeholder="Ex: 21 99999-9999"
-            />
+            <div className="relative">
+              <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+              <input
+                name="telefone"
+                defaultValue={telefone}
+                className="h-11 w-full rounded-xl border border-neutral-200 bg-white pl-10 pr-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
+                placeholder="Ex: 21 99999-9999"
+              />
+            </div>
           </div>
 
           <div className="space-y-1">
             <label className="text-xs font-semibold text-neutral-600">
-              Nome do condomínio
+              Nome do Condomínio
             </label>
-            <input
-              name="condominioNome"
-              defaultValue={condominioNome}
-              className="h-11 w-full rounded-xl border border-neutral-200 bg-white px-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
-              placeholder="Ex: Bela Vista"
-            />
+            <div className="relative">
+              <Building className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+              <input
+                name="condominioNome"
+                defaultValue={condominioNome}
+                className="h-11 w-full rounded-xl border border-neutral-200 bg-white pl-10 pr-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
+                placeholder="Ex: Bela Vista"
+              />
+            </div>
           </div>
 
           <div className="space-y-1">
             <label className="text-xs font-semibold text-neutral-600">
               Bairro
             </label>
-            <input
-              name="bairro"
-              defaultValue={bairro}
-              className="h-11 w-full rounded-xl border border-neutral-200 bg-white px-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
-              placeholder="Ex: Itaipava"
-            />
+            <div className="relative">
+              <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+              <input
+                name="bairro"
+                defaultValue={bairro}
+                className="h-11 w-full rounded-xl border border-neutral-200 bg-white pl-10 pr-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
+                placeholder="Ex: Itaipava"
+              />
+            </div>
           </div>
 
           <div className="space-y-1">
             <label className="text-xs font-semibold text-neutral-600">
-              Código do imóvel
+              Código do Imóvel
             </label>
-            <input
-              name="codigo"
-              defaultValue={codigo}
-              className="h-11 w-full rounded-xl border border-neutral-200 bg-white px-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
-              placeholder="Ex: AR-102"
-            />
+            <div className="relative">
+              <Hash className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+              <input
+                name="codigo"
+                defaultValue={codigo}
+                className="h-11 w-full rounded-xl border border-neutral-200 bg-white pl-10 pr-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
+                placeholder="Ex: AR-102"
+              />
+            </div>
           </div>
 
           <div className="space-y-1 md:col-span-2">
             <label className="text-xs font-semibold text-neutral-600">
-              Endereço do imóvel (interno)
+              Endereço do Imóvel (interno)
             </label>
-            <input
-              name="endereco"
-              defaultValue={endereco}
-              className="h-11 w-full rounded-xl border border-neutral-200 bg-white px-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
-              placeholder="Ex: Estrada União Indústria, 9500"
-            />
+            <div className="relative">
+              <FileText className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+              <input
+                name="endereco"
+                defaultValue={endereco}
+                className="h-11 w-full rounded-xl border border-neutral-200 bg-white pl-10 pr-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
+                placeholder="Ex: Estrada União Indústria, 9500"
+              />
+            </div>
           </div>
 
           <div className="space-y-1">
             <label className="text-xs font-semibold text-neutral-600">
               Corretora (captação)
             </label>
-            <input
-              name="corretora"
-              defaultValue={corretora}
-              className="h-11 w-full rounded-xl border border-neutral-200 bg-white px-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
-              placeholder="Digite o nome da corretora"
-            />
+            <div className="relative">
+              <Briefcase className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+              <input
+                name="corretora"
+                defaultValue={corretora}
+                className="h-11 w-full rounded-xl border border-neutral-200 bg-white pl-10 pr-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
+                placeholder="Digite o nome da corretora"
+              />
+            </div>
           </div>
 
           <div className="flex items-end justify-end md:col-span-4">
@@ -323,7 +369,7 @@ export default async function AdminImoveisPage({
               type="submit"
               className="h-11 rounded-full bg-green-700 px-8 text-sm font-semibold text-white shadow-sm transition hover:bg-green-800"
             >
-              Aplicar filtros
+              Aplicar Filtros
             </button>
           </div>
         </form>
@@ -391,7 +437,7 @@ export default async function AdminImoveisPage({
         <div className="grid md:grid-cols-2 gap-4">
           {imoveisSafe.map((imovel) => {
             const coverUrl = (imovel as any).coverUrl;
-const hasCover = (imovel as any).hasCover;
+            const hasCover = (imovel as any).hasCover;
 
             return (
               <div key={imovel.id} className="rounded-2xl border p-4 space-y-3">
@@ -476,7 +522,6 @@ const hasCover = (imovel as any).hasCover;
     </main>
   );
 }
-
 
 
 

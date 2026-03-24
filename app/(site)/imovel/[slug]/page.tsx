@@ -29,6 +29,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     city: true,
     neighborhood: true,
     price: true,
+    priceRent: true,
     descricao: true,
     coverPhotoId: true,
     photos: {
@@ -303,11 +304,19 @@ const tituloRelacionados = bairro || cidade || "sua região";
 )}
     </div>
 
-    {imovel.price ? (
-      <div className="mt-2 text-2xl font-extrabold">
-        {formatMoney(imovel.price)}
-      </div>
-    ) : null}
+    <div className="mt-2 flex flex-col gap-1">
+  {imovel.price ? (
+    <div className="text-2xl font-extrabold">
+      {formatMoney(imovel.price)}
+    </div>
+  ) : null}
+
+  {imovel.priceRent ? (
+    <div className="text-lg font-semibold text-primary">
+      Aluguel: {formatMoney(imovel.priceRent)}
+    </div>
+  ) : null}
+</div>
   </div>
 
   

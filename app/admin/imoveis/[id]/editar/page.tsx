@@ -48,6 +48,10 @@ export default async function EditarImovelPage({ params }: PageProps) {
           tipo: (imovel as any).tipo ?? "",
           purpose: (imovel as any).purpose ?? "",
           price: typeof imovel.price === "number" ? String(imovel.price) : "",
+          priceRent:
+            typeof (imovel as any).priceRent === "number"
+              ? String((imovel as any).priceRent)
+              : "",
           descricao: (imovel as any).descricao ?? "",
           proprietarioNome: (imovel as any).proprietarioNome ?? "",
           proprietarioTelefone: (imovel as any).proprietarioTelefone ?? "",
@@ -56,7 +60,7 @@ export default async function EditarImovelPage({ params }: PageProps) {
           endereco: (imovel as any).endereco ?? "",
           corretoraCaptacao: (imovel as any).corretoraCaptacao ?? "",
           condominio: imovel.condominio?.toString() ?? "",
-iptu: imovel.iptu?.toString() ?? "",
+          iptu: imovel.iptu?.toString() ?? "",
         }}
       />
     </main>

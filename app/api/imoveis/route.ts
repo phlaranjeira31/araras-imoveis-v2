@@ -84,6 +84,9 @@ export async function POST(req: Request) {
 
     if (body?.price !== undefined) data.price = parseMoneyToInt(body.price);
 
+    if (body?.priceRent !== undefined)
+  data.priceRent = parseMoneyToInt(body.priceRent);
+
     if (body?.tipo !== undefined) data.tipo = body.tipo ? String(body.tipo).trim() : null;
 
     if (body?.quartos !== undefined) data.quartos = parseIntOrNull(body.quartos);

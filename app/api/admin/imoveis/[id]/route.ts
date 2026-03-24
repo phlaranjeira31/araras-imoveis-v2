@@ -23,6 +23,20 @@ export async function PATCH(
       );
     }
 
+    // ✅ ADICIONADO (preço locação)
+    const priceRentRaw = String(body?.priceRent ?? "").trim();
+    const priceRent =
+      priceRentRaw === ""
+        ? null
+        : Number(String(priceRentRaw).replace(/[^\d]/g, ""));
+
+    if (priceRentRaw !== "" && (priceRent == null || Number.isNaN(priceRent))) {
+      return NextResponse.json(
+        { error: "Preço de locação inválido. Use apenas números (ex: 5000)." },
+        { status: 400 }
+      );
+    }
+
     // ✅ ADICIONADO (corretora)
     const corretoraRaw = String(body?.corretoraCaptacao ?? "").trim();
     const corretoraCaptacao =
@@ -69,6 +83,13 @@ export async function PATCH(
       data.price = null;
     } else {
       data.price = price;
+    }
+
+    // ✅ ADICIONADO (salva preço locação)
+    if (priceRentRaw === "") {
+      data.priceRent = null;
+    } else {
+      data.priceRent = priceRent;
     }
 
     await prisma.imovel.update({
