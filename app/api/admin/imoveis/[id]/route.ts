@@ -56,6 +56,40 @@ export async function PATCH(
         ? null
         : Number(String(iptuRaw).replace(/[^\d]/g, ""));
 
+    // ✅ ADICIONADO (área construída)
+    const areaConstruidaRaw = String(body?.areaConstruida ?? "").trim();
+    const areaConstruida =
+      areaConstruidaRaw === ""
+        ? null
+        : Number(String(areaConstruidaRaw).replace(/[^\d]/g, ""));
+
+    if (
+      areaConstruidaRaw !== "" &&
+      (areaConstruida == null || Number.isNaN(areaConstruida))
+    ) {
+      return NextResponse.json(
+        { error: "Área construída inválida. Use apenas números (ex: 250)." },
+        { status: 400 }
+      );
+    }
+
+    // ✅ ADICIONADO (área do terreno)
+    const areaTerrenoRaw = String(body?.areaTerreno ?? "").trim();
+    const areaTerreno =
+      areaTerrenoRaw === ""
+        ? null
+        : Number(String(areaTerrenoRaw).replace(/[^\d]/g, ""));
+
+    if (
+      areaTerrenoRaw !== "" &&
+      (areaTerreno == null || Number.isNaN(areaTerreno))
+    ) {
+      return NextResponse.json(
+        { error: "Área do terreno inválida. Use apenas números (ex: 600)." },
+        { status: 400 }
+      );
+    }
+
     const data: any = {
       title: String(body?.title ?? "").trim() || null,
       slug: String(body?.slug ?? "").trim() || null,
@@ -77,6 +111,10 @@ export async function PATCH(
       // ✅ ADICIONADO (salva condomínio e IPTU)
       condominio,
       iptu,
+
+      // ✅ ADICIONADO (salva áreas)
+      areaConstruida,
+      areaTerreno,
     };
 
     if (priceRaw === "") {

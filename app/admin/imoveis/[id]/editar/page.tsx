@@ -61,6 +61,8 @@ export default async function EditarImovelPage({ params }: PageProps) {
           corretoraCaptacao: (imovel as any).corretoraCaptacao ?? "",
           condominio: imovel.condominio?.toString() ?? "",
           iptu: imovel.iptu?.toString() ?? "",
+          areaConstruida: (imovel as any).areaConstruida?.toString() ?? "",
+          areaTerreno: (imovel as any).areaTerreno?.toString() ?? "",
         }}
       />
     </main>

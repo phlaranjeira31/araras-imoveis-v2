@@ -28,6 +28,8 @@ type DefaultValues = {
   corretoraCaptacao: string;
   condominio: string;
   iptu: string;
+  areaConstruida: string;
+  areaTerreno: string;
 };
 
 const CORRETORAS = ["Lidiane Farias", "Ana Andrade", "Claudia Raposo", "Elis"];
@@ -118,6 +120,9 @@ export default function EditImovelForm({
 
       condominio: condominioMasked.replace(/\D/g, ""),
       iptu: iptuMasked.replace(/\D/g, ""),
+
+      areaConstruida: String(form.get("areaConstruida") ?? "").trim(),
+      areaTerreno: String(form.get("areaTerreno") ?? "").trim(),
     };
 
     try {
@@ -194,6 +199,22 @@ export default function EditImovelForm({
             label="Nome do condomínio"
             name="condominioNome"
             defaultValue={defaultValues.condominioNome}
+          />
+
+          <Field
+            label="Área construída"
+            name="areaConstruida"
+            defaultValue={defaultValues.areaConstruida}
+            placeholder="Ex: 250"
+            inputMode="numeric"
+          />
+
+          <Field
+            label="Área do terreno"
+            name="areaTerreno"
+            defaultValue={defaultValues.areaTerreno}
+            placeholder="Ex: 600"
+            inputMode="numeric"
           />
         </div>
       </section>
