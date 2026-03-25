@@ -124,6 +124,9 @@ export default async function ImoveisPage({ searchParams }: PageProps) {
       { neighborhood: { contains: qNormalized, mode: "insensitive" } },
       { title: { contains: qNormalized, mode: "insensitive" } },
       { slug: { contains: qNormalized, mode: "insensitive" } },
+
+      // ✅ ADICIONADO: busca também por código do imóvel
+      { codigo: { contains: qNormalized, mode: "insensitive" } },
     ];
   }
 
@@ -183,7 +186,7 @@ export default async function ImoveisPage({ searchParams }: PageProps) {
     .filter(Boolean)
     .sort((a: string, b: string) => a.localeCompare(b, "pt-BR"));
 
-    const tiposParaSelect =
+  const tiposParaSelect =
     tiposDisponiveis.length > 0 ? tiposDisponiveis : TIPOS_FIXOS;
 
   // ✅ garante ativo sem risco de ser sobrescrito
@@ -322,143 +325,145 @@ export default async function ImoveisPage({ searchParams }: PageProps) {
         tiposParaSelect.length > 0) && (
         <div className="rounded-3xl border border-slate-200 bg-white/80 p-5 shadow-sm backdrop-blur md:p-6">
           <form
-  action="/imoveis"
-  method="GET"
-  className="grid grid-cols-1 gap-4 md:grid-cols-12"
->
-  {purposeSelecionado ? (
-    <input type="hidden" name="purpose" value={purposeSelecionado} />
-  ) : null}
+            action="/imoveis"
+            method="GET"
+            className="grid grid-cols-1 gap-4 md:grid-cols-12"
+          >
+            {purposeSelecionado ? (
+              <input type="hidden" name="purpose" value={purposeSelecionado} />
+            ) : null}
 
-  {qSelecionado ? (
-    <input type="hidden" name="q" value={qSelecionado} />
-  ) : null}
+            {qSelecionado ? (
+              <input type="hidden" name="q" value={qSelecionado} />
+            ) : null}
 
-  {negocioSelecionado ? (
-    <input type="hidden" name="negocio" value={negocioSelecionado} />
-  ) : null}
+            {negocioSelecionado ? (
+              <input type="hidden" name="negocio" value={negocioSelecionado} />
+            ) : null}
 
-  <input type="hidden" name="page" value="1" />
+            <input type="hidden" name="page" value="1" />
 
-  {/* SELECT BAIRRO */}
-  <div className="md:col-span-4">
-    <label className="text-sm font-bold text-slate-900">
-      Filtrar por bairro
-    </label>
-    <select
-      name="bairro"
-      defaultValue={bairroSelecionado}
-      className="mt-2 h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm"
-    >
-      <option value="">Todos</option>
-      {bairros.map((b) => (
-        <option key={b} value={b}>
-          {capitalize(b)}
-        </option>
-      ))}
-    </select>
-  </div>
+            {/* SELECT BAIRRO */}
+            <div className="md:col-span-4">
+              <label className="text-sm font-bold text-slate-900">
+                Filtrar por bairro
+              </label>
+              <select
+                name="bairro"
+                defaultValue={bairroSelecionado}
+                className="mt-2 h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm"
+              >
+                <option value="">Todos</option>
+                {bairros.map((b) => (
+                  <option key={b} value={b}>
+                    {capitalize(b)}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-  {/* SELECT CIDADE */}
-  <div className="md:col-span-4">
-    <label className="text-sm font-bold text-slate-900">
-      Filtrar por cidade
-    </label>
-    <select
-      name="cidade"
-      defaultValue={cidadeSelecionada}
-      className="mt-2 h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm"
-    >
-      <option value="">Todas</option>
-      {cidades.map((c) => (
-        <option key={c} value={c}>
-          {capitalize(c)}
-        </option>
-      ))}
-    </select>
-  </div>
+            {/* SELECT CIDADE */}
+            <div className="md:col-span-4">
+              <label className="text-sm font-bold text-slate-900">
+                Filtrar por cidade
+              </label>
+              <select
+                name="cidade"
+                defaultValue={cidadeSelecionada}
+                className="mt-2 h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm"
+              >
+                <option value="">Todas</option>
+                {cidades.map((c) => (
+                  <option key={c} value={c}>
+                    {capitalize(c)}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-  {/* SELECT TIPO */}
-  <div className="md:col-span-4">
-    <label className="text-sm font-bold text-slate-900">
-      Filtrar por tipo
-    </label>
-    <select
-      name="tipo"
-      defaultValue={tipoSelecionado}
-      className="mt-2 h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm"
-    >
-      <option value="">Todos</option>
-      {tiposParaSelect.map((t) => (
-        <option key={t} value={t}>
-          {capitalize(t)}
-        </option>
-      ))}
-    </select>
-  </div>
+            {/* SELECT TIPO */}
+            <div className="md:col-span-4">
+              <label className="text-sm font-bold text-slate-900">
+                Filtrar por tipo
+              </label>
+              <select
+                name="tipo"
+                defaultValue={tipoSelecionado}
+                className="mt-2 h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm"
+              >
+                <option value="">Todos</option>
+                {tiposParaSelect.map((t) => (
+                  <option key={t} value={t}>
+                    {capitalize(t)}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-  {/* BLOCO PREÇO */}
-  <div className="md:col-span-8">
-    <label className="text-sm font-bold text-slate-900">Preço</label>
+            {/* BLOCO PREÇO */}
+            <div className="md:col-span-8">
+              <label className="text-sm font-bold text-slate-900">Preço</label>
 
-    <div className="mt-2 rounded-2xl border border-slate-200 bg-white px-4 py-3">
-      <PriceRangeClient
-        nameMin="minPrice"
-        nameMax="maxPrice"
-        defaultMin={
-          minPriceNum !== null && !Number.isNaN(minPriceNum) ? minPriceNum : 0
-        }
-        defaultMax={
-          maxPriceNum !== null && !Number.isNaN(maxPriceNum)
-            ? maxPriceNum
-            : 25000000
-        }
-        minBound={0}
-        maxBound={25000000}
-        step={50000}
-      />
-    </div>
-  </div>
+              <div className="mt-2 rounded-2xl border border-slate-200 bg-white px-4 py-3">
+                <PriceRangeClient
+                  nameMin="minPrice"
+                  nameMax="maxPrice"
+                  defaultMin={
+                    minPriceNum !== null && !Number.isNaN(minPriceNum)
+                      ? minPriceNum
+                      : 0
+                  }
+                  defaultMax={
+                    maxPriceNum !== null && !Number.isNaN(maxPriceNum)
+                      ? maxPriceNum
+                      : 25000000
+                  }
+                  minBound={0}
+                  maxBound={25000000}
+                  step={50000}
+                />
+              </div>
+            </div>
 
-  {/* BLOCO ORDENAR */}
-  <div className="md:col-span-4">
-    <div className="flex items-center gap-2 text-sm font-bold text-slate-900">
-      <ArrowUpDown className="h-4 w-4 text-slate-600" />
-      Ordenar por
-    </div>
+            {/* BLOCO ORDENAR */}
+            <div className="md:col-span-4">
+              <div className="flex items-center gap-2 text-sm font-bold text-slate-900">
+                <ArrowUpDown className="h-4 w-4 text-slate-600" />
+                Ordenar por
+              </div>
 
-    <select
-      name="sort"
-      defaultValue={sortValue}
-      className="mt-2 h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm"
-    >
-      <option value="recentes">Recentes</option>
-      <option value="maior_preco">Maior preço</option>
-      <option value="menor_preco">Menor preço</option>
-    </select>
-  </div>
+              <select
+                name="sort"
+                defaultValue={sortValue}
+                className="mt-2 h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm"
+              >
+                <option value="recentes">Recentes</option>
+                <option value="maior_preco">Maior preço</option>
+                <option value="menor_preco">Menor preço</option>
+              </select>
+            </div>
 
-  {/* BOTÕES */}
-  <div className="md:col-span-12 flex flex-col gap-2 pt-2 sm:flex-row">
-    <button
-      className="h-12 rounded-2xl bg-primary px-5 text-sm font-extrabold text-white sm:w-auto"
-      type="submit"
-    >
-      Aplicar
-    </button>
+            {/* BOTÕES */}
+            <div className="md:col-span-12 flex flex-col gap-2 pt-2 sm:flex-row">
+              <button
+                className="h-12 rounded-2xl bg-primary px-5 text-sm font-extrabold text-white sm:w-auto"
+                type="submit"
+              >
+                Aplicar
+              </button>
 
-    <Link
-      href={
-        purposeSelecionado
-          ? `/imoveis?purpose=${encodeURIComponent(purposeSelecionado)}`
-          : "/imoveis"
-      }
-      className="inline-flex h-12 items-center justify-center rounded-2xl border px-5 text-sm font-bold sm:w-auto"
-    >
-      Limpar
-    </Link>
-  </div>
-</form>
+              <Link
+                href={
+                  purposeSelecionado
+                    ? `/imoveis?purpose=${encodeURIComponent(purposeSelecionado)}`
+                    : "/imoveis"
+                }
+                className="inline-flex h-12 items-center justify-center rounded-2xl border px-5 text-sm font-bold sm:w-auto"
+              >
+                Limpar
+              </Link>
+            </div>
+          </form>
         </div>
       )}
 
