@@ -1,7 +1,7 @@
-
 import Link from "next/link";
 import PrintButton from "@/components/PrintButton";
 import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
 import {
   Plus,
   Image,
@@ -27,6 +27,24 @@ export default async function AdminImoveisPage({
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const sp = (await searchParams) ?? {};
+
+  async function salvarObservacao(formData: FormData) {
+    "use server";
+
+    const id = String(formData.get("id") ?? "").trim();
+    const observacoesInternas = String(
+      formData.get("observacoesInternas") ?? ""
+    ).trim();
+
+    if (!id) return;
+
+    await prisma.imovel.update({
+      where: { id },
+      data: { observacoesInternas },
+    });
+
+    revalidatePath("/admin/imoveis");
+  }
 
   const getParam = (key: string) => {
     const v = sp?.[key];
@@ -111,6 +129,7 @@ export default async function AdminImoveisPage({
       codigo: true,
       endereco: true,
       corretoraCaptacao: true,
+      observacoesInternas: true,
     },
   });
 
@@ -513,6 +532,39 @@ export default async function AdminImoveisPage({
                     <ExternalLink className="h-4 w-4" />
                     Site
                   </Link>
+
+                  <details className="group">
+                    <summary className="list-none inline-flex cursor-pointer items-center gap-2 px-3 py-1.5 rounded-full border hover:bg-neutral-50 text-xs font-semibold">
+                      <FileText className="h-4 w-4" />
+                      OBS
+                    </summary>
+
+                    <div className="mt-3 w-full rounded-2xl border bg-neutral-50 p-3">
+                      <form action={salvarObservacao} className="space-y-3">
+                        <input type="hidden" name="id" value={imovel.id} />
+
+                        <textarea
+                          name="observacoesInternas"
+                          defaultValue={imovel.observacoesInternas ?? ""}
+                          placeholder="Digite observações internas deste imóvel..."
+                          className="min-h-[120px] w-full rounded-xl border border-neutral-200 bg-white p-3 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
+                        />
+
+                        <div className="flex items-center justify-between gap-3">
+                          <p className="text-[11px] text-neutral-500">
+                            Visível somente no admin.
+                          </p>
+
+                          <button
+                            type="submit"
+                            className="rounded-full bg-green-700 px-4 py-2 text-xs font-semibold text-white transition hover:bg-green-800"
+                          >
+                            Salvar observação
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </details>
                 </div>
               </div>
             );

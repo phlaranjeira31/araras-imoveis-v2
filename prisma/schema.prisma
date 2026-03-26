@@ -55,7 +55,10 @@ model Imovel {
   proprietarioEmail    String?
   condominioNome       String?
   codigo               String?  @unique
+  observacoesInternas String?
+  
   photos               Photo[]
+
 
   ativo     Boolean  @default(true)
 
