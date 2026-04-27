@@ -312,6 +312,10 @@ export default function NovoImovelPage() {
                 <option value="Terreno">Terreno</option>
                 <option value="Terreno em Condomínio">Terreno em Condomínio</option>
                 <option value="Comercial">Comercial</option>
+                <option value="Sítio">Sítio</option>
+<option value="Fazenda">Fazenda</option>
+<option value="Galpão">Galpão</option>
+<option value="Loja">Loja</option>
               </select>
             </div>
 

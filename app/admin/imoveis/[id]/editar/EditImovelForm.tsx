@@ -179,7 +179,32 @@ export default function EditImovelForm({
             placeholder="Ex: Estrada União Indústria, 9500, Itaipava"
           />
 
-          <Field label="Tipo" name="tipo" defaultValue={defaultValues.tipo} />
+          <div className="flex flex-col gap-1">
+  <label className="text-sm font-semibold text-neutral-700">Tipo</label>
+
+  <input
+    type="text"
+    name="tipo"
+    list="lista-tipos-imovel"
+    defaultValue={defaultValues.tipo}
+    className="h-11 rounded-2xl border px-3 text-sm"
+    placeholder="Selecione ou digite o tipo"
+  />
+
+  <datalist id="lista-tipos-imovel">
+    <option value="Casa" />
+    <option value="Casa em Condomínio" />
+    <option value="Apartamento" />
+    <option value="Cobertura" />
+    <option value="Terreno" />
+    <option value="Terreno em Condomínio" />
+    <option value="Comercial" />
+    <option value="Sítio" />
+    <option value="Fazenda" />
+    <option value="Galpão" />
+    <option value="Loja" />
+  </datalist>
+</div>
 
           <Field
             label="Finalidade"
