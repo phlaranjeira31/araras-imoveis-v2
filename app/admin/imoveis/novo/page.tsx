@@ -316,6 +316,9 @@ export default function NovoImovelPage() {
 <option value="Fazenda">Fazenda</option>
 <option value="Galpão">Galpão</option>
 <option value="Loja">Loja</option>
+<option value="Loja">Loft</option>
+<option value="Loja">Apartamento Garden</option>
+<option value="Loja">Studio</option>
               </select>
             </div>
 

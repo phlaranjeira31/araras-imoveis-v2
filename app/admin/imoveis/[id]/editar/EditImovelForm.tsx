@@ -203,6 +203,9 @@ export default function EditImovelForm({
     <option value="Fazenda" />
     <option value="Galpão" />
     <option value="Loja" />
+    <option value="Loft" />
+    <option value="Apartamento Garden" />
+    <option value="Studio" />
   </datalist>
 </div>
 
