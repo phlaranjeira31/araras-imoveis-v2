@@ -3,8 +3,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 
-const PHONE_DISPLAY = "(24) 99939-7343";
-const PHONE_TEL = "+5524999397343";
+const PHONE_DISPLAY = "Lidiane Farias: 21 96450-7343 | Claudia Raposo: 24 98823-0138";
+const PHONE_TEL = "+5521964507343";
 const EMAIL = "araras.imoveisrj@gmail.com";
 
 const ADDRESS_DISPLAY = "Estrada União Industria, 9.500, Sala 03, Itaipava, Petrópolis - RJ";

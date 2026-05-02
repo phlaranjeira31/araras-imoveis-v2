@@ -338,22 +338,22 @@ export default function Navbar() {
             {/* WhatsApp */}
             {/* WhatsApp (ícone premium) */}
             <a
-              href="https://wa.me/5524999397343"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Falar no WhatsApp"
-              className="
-                flex items-center justify-center
-                h-11 w-11
-                rounded-full
-                bg-green-600
-                text-white
-                shadow-md
-                transition
-                hover:bg-green-700
-                hover:scale-105
-              "
-            >
+  href="https://wa.me/5521964507343?text=Olá!%20Vim%20pelo%20site%20Araras%20Imóveis%20👋"
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label="Falar no WhatsApp"
+  className="
+    flex items-center justify-center
+    h-11 w-11
+    rounded-full
+    bg-green-600
+    text-white
+    shadow-md
+    transition
+    hover:bg-green-700
+    hover:scale-105
+  "
+>
               <svg
                 viewBox="0 0 24 24"
                 width="20"
