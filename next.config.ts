@@ -1,7 +1,9 @@
+
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
+    unoptimized: true, // 👈 ISSO AQUI RESOLVE O ERRO 402
     remotePatterns: [
       {
         protocol: "https",
@@ -12,4 +14,3 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
-
