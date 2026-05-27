@@ -338,7 +338,7 @@ export default function Navbar() {
             {/* WhatsApp */}
             {/* WhatsApp (ícone premium) */}
             <a
-  href="https://wa.me/5521964507343?text=Olá!%20Vim%20pelo%20site%20Araras%20Imóveis%20👋"
+  href="https://wa.me/5524988230138?text=Olá!%20Vim%20pelo%20site%20Araras%20Imóveis%20👋"
   target="_blank"
   rel="noopener noreferrer"
   aria-label="Falar no WhatsApp"

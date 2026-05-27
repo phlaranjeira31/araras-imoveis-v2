@@ -11,6 +11,13 @@ const TIPOS = [
   "Terreno",
   "Terreno em Condomínio",
   "Comercial",
+  "Sítio",
+  "Fazenda",
+  "Galpão",
+  "Loja",
+  "Loft",
+  "Apartamento Garden",
+  "Studio",
 ];
 
 export default function HomeSearchBar() {

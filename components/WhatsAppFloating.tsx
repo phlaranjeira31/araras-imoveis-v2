@@ -3,7 +3,7 @@
 
 import { useWhatsAppFloat } from "@/components/WhatsAppContext";
 
-const PHONE_TEL = "+5521964507343";
+const PHONE_TEL = "+5524988230138";
 
 // padrão (site inteiro)
 function defaultHref() {
