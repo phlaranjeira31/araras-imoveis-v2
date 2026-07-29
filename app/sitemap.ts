@@ -1,41 +1,57 @@
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
-
 import type { MetadataRoute } from "next";
 import prisma from "@/lib/prisma";
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+// Atualiza o sitemap no máximo uma vez por hora.
+// Evita consultar o Neon em toda visita ao /sitemap.xml.
+export const revalidate = 3600;
 
+const BASE_URL = (
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  "https://www.ararasimoveis.net.br"
+).replace(/\/+$/, "");
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const imoveis = await prisma.imovel.findMany({
-    where: { ativo: true },
+    where: {
+      ativo: true,
+    },
     select: {
       slug: true,
       updatedAt: true,
     },
+    orderBy: {
+      updatedAt: "desc",
+    },
   });
 
-  const imoveisUrls: MetadataRoute.Sitemap = imoveis.map((i) => ({
-    url: `${baseUrl}/imovel/${i.slug}`,
-    lastModified: i.updatedAt || new Date(),
-    changeFrequency: "weekly",
-    priority: 0.8,
-  }));
+  const ultimaAtualizacao =
+    imoveis.length > 0 ? imoveis[0].updatedAt : undefined;
 
-  return [
+  const paginasPrincipais: MetadataRoute.Sitemap = [
     {
-      url: baseUrl,
-      lastModified: new Date(),
+      url: BASE_URL,
+      ...(ultimaAtualizacao
+        ? { lastModified: ultimaAtualizacao }
+        : {}),
       changeFrequency: "weekly",
       priority: 1,
     },
     {
-      url: `${baseUrl}/imoveis`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
+      url: `${BASE_URL}/imoveis`,
+      ...(ultimaAtualizacao
+        ? { lastModified: ultimaAtualizacao }
+        : {}),
+      changeFrequency: "daily",
       priority: 0.9,
     },
-    ...imoveisUrls,
   ];
+
+  const imoveisUrls: MetadataRoute.Sitemap = imoveis.map((imovel) => ({
+    url: `${BASE_URL}/imovel/${imovel.slug}`,
+    lastModified: imovel.updatedAt,
+    changeFrequency: "weekly",
+    priority: 0.8,
+  }));
+
+  return [...paginasPrincipais, ...imoveisUrls];
 }
