@@ -54,15 +54,19 @@ export default async function EditarImovelPage({ params }: PageProps) {
               : "",
           descricao: (imovel as any).descricao ?? "",
           proprietarioNome: (imovel as any).proprietarioNome ?? "",
-          proprietarioTelefone: (imovel as any).proprietarioTelefone ?? "",
+          proprietarioTelefone:
+            (imovel as any).proprietarioTelefone ?? "",
           condominioNome: (imovel as any).condominioNome ?? "",
           codigo: (imovel as any).codigo ?? "",
           endereco: (imovel as any).endereco ?? "",
           corretoraCaptacao: (imovel as any).corretoraCaptacao ?? "",
           condominio: imovel.condominio?.toString() ?? "",
           iptu: imovel.iptu?.toString() ?? "",
-          areaConstruida: (imovel as any).areaConstruida?.toString() ?? "",
+          areaConstruida:
+            (imovel as any).areaConstruida?.toString() ?? "",
           areaTerreno: (imovel as any).areaTerreno?.toString() ?? "",
+
+          mobiliado: Boolean((imovel as any).mobiliado),
         }}
       />
     </main>

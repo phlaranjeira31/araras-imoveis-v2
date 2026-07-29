@@ -30,6 +30,7 @@ type DefaultValues = {
   iptu: string;
   areaConstruida: string;
   areaTerreno: string;
+  mobiliado?: boolean;
 };
 
 const CORRETORAS = ["Lidiane Farias", "Ana Andrade", "Claudia Raposo", "Elis"];
@@ -123,6 +124,7 @@ export default function EditImovelForm({
 
       areaConstruida: String(form.get("areaConstruida") ?? "").trim(),
       areaTerreno: String(form.get("areaTerreno") ?? "").trim(),
+      mobiliado: form.get("mobiliado") === "on",
     };
 
     try {
@@ -244,6 +246,22 @@ export default function EditImovelForm({
             placeholder="Ex: 600"
             inputMode="numeric"
           />
+
+          <div className="flex items-center gap-3">
+            <input
+              id="mobiliado"
+              name="mobiliado"
+              type="checkbox"
+              defaultChecked={Boolean(defaultValues.mobiliado)}
+              className="h-4 w-4"
+            />
+            <label
+              htmlFor="mobiliado"
+              className="text-sm font-semibold text-neutral-700"
+            >
+              Mobiliado
+            </label>
+          </div>
         </div>
       </section>
 

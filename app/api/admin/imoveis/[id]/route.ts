@@ -90,6 +90,14 @@ export async function PATCH(
       );
     }
 
+    // ✅ ADICIONADO (mobiliado)
+    const mobiliado =
+      body?.mobiliado === true ||
+      body?.mobiliado === "true" ||
+      body?.mobiliado === 1 ||
+      body?.mobiliado === "1" ||
+      body?.mobiliado === "on";
+
     const data: any = {
       title: String(body?.title ?? "").trim() || null,
       slug: String(body?.slug ?? "").trim() || null,
@@ -115,6 +123,9 @@ export async function PATCH(
       // ✅ ADICIONADO (salva áreas)
       areaConstruida,
       areaTerreno,
+
+      // ✅ ADICIONADO (salva mobiliado)
+      mobiliado,
     };
 
     if (priceRaw === "") {
