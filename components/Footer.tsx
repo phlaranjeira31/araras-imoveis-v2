@@ -1,113 +1,229 @@
 // components/Footer.tsx
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin, Phone, Mail, Clock } from "lucide-react";
+import {
+  ArrowRight,
+  Clock,
+  ExternalLink,
+  Mail,
+  MapPin,
+  Phone,
+} from "lucide-react";
 
-const PHONE_DISPLAY = "Lidiane Farias: 21 96450-7343 | Claudia Raposo: 24 98823-0138";
-const PHONE_TEL = "+5521964507343";
+const PHONE_LIDIANE_DISPLAY = "21 96450-7343";
+const PHONE_LIDIANE_TEL = "+5521964507343";
+
+const PHONE_CLAUDIA_DISPLAY = "24 98823-0138";
+const PHONE_CLAUDIA_TEL = "+5524988230138";
+
+// Mantém o WhatsApp do footer direcionando para Lidiane,
+// igual ao funcionamento atual do arquivo.
+const WHATSAPP_TEL = PHONE_LIDIANE_TEL;
+
 const EMAIL = "araras.imoveisrj@gmail.com";
 
-const ADDRESS_DISPLAY = "Estrada União Industria, 9.500, Sala 03, Itaipava, Petrópolis - RJ";
+const ADDRESS_DISPLAY =
+  "Estrada União Industria, 9.500, Sala 03, Itaipava, Petrópolis - RJ";
+
 const MAPS_URL = "https://maps.app.goo.gl/c4XBMaE3u8w2kZY2A";
 
 const INSTAGRAM_URL =
   "https://www.instagram.com/araras.imoveis?igsh=bDNrMDk1dW80czZs";
+
 const YOUTUBE_URL = "https://www.youtube.com/@araras.imoveis";
+
+const REGIONS = [
+  {
+    label: "Centro",
+    href: "/imoveis?bairro=Petrópolis",
+  },
+  {
+    label: "Itaipava",
+    href: "/imoveis?bairro=Itaipava",
+  },
+  {
+    label: "Araras",
+    href: "/imoveis?bairro=Araras",
+  },
+  {
+    label: "Cascatinha",
+    href: "/imoveis?bairro=Cascatinha",
+  },
+  {
+    label: "Corrêas",
+    href: "/imoveis?bairro=Corrêas",
+  },
+  {
+    label: "Secretário",
+    href: "/imoveis?bairro=Secretário",
+  },
+  {
+    label: "Pedro do Rio",
+    href: "/imoveis?bairro=Pedro%20do%20Rio",
+  },
+  {
+    label: "Posse",
+    href: "/imoveis?bairro=Posse",
+  },
+];
 
 export default function Footer() {
   return (
-    <footer className="mt-16 bg-[#4a7c63] text-white">
-      <div className="mx-auto max-w-6xl px-4 py-8">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
-          {/* Marca */}
+    <footer className="relative mt-16 overflow-hidden bg-[#365f4d] text-white">
+      {/* Elementos decorativos de fundo */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -left-32 top-20 h-80 w-80 rounded-full bg-white/[0.04] blur-3xl"
+      />
+
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-[#8ca780]/20 blur-3xl"
+      />
+
+      <div className="relative mx-auto max-w-6xl px-4 pb-4 pt-7 sm:pt-8">
+        {/* Conteúdo principal */}
+        <div className="grid gap-6 lg:grid-cols-[0.95fr_1fr_1fr] lg:gap-8">
+          {/* Marca e endereço */}
           <div>
-            <h3 className="text-lg font-extrabold tracking-wide">
-              Araras Imóveis
-            </h3>
-            <p className="mt-1 text-sm text-white/80">CRECI: 10376</p>
-
-            <p className="mt-3 max-w-sm text-sm leading-relaxed text-white/90">
-              Atendimento rápido e curadoria de imóveis de alto padrão em toda serra carioca.
-            </p>
-
-            <div className="mt-4">
-              <div className="flex items-start gap-2">
-                <MapPin className="h-5 w-5 mt-1 text-white/80 shrink-0" />
-                <div>
-                  <p className="text-sm font-semibold text-white">Endereço:</p>
-                  <a
-                    href={MAPS_URL}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mt-1 inline-block text-sm font-medium text-white underline underline-offset-4 hover:text-white/80"
-                  >
-                    {ADDRESS_DISPLAY}
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-6 relative h-28 w-56 sm:h-32 sm:w-64">
+            <div className="relative h-20 w-44 sm:h-24 sm:w-52">
               <Image
                 src="/brand/logo-footer.png"
                 alt="Araras Imóveis"
                 fill
-                className="object-contain"
+                sizes="208px"
+                className="object-contain object-left"
               />
             </div>
+
+            <div className="mt-3 flex items-center gap-3">
+              <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold text-white/85">
+                CRECI: 10376
+              </span>
+
+              <span className="h-px flex-1 bg-white/15" />
+            </div>
+
+            <p className="mt-4 max-w-sm text-sm leading-6 text-white/80">
+              Atendimento rápido e curadoria de imóveis de alto padrão em toda
+              serra carioca.
+            </p>
+
+            <a
+              href={MAPS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group mt-4 flex items-start gap-3 rounded-xl border border-white/15 bg-black/10 p-3 transition hover:border-white/30 hover:bg-white/10"
+            >
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/10">
+                <MapPin className="h-4 w-4 text-white" />
+              </span>
+
+              <span className="min-w-0">
+                <span className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-white/60">
+                  Nosso endereço
+                  <ExternalLink className="h-3.5 w-3.5 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                </span>
+
+                <span className="mt-1 block text-sm font-medium leading-5 text-white">
+                  {ADDRESS_DISPLAY}
+                </span>
+              </span>
+            </a>
           </div>
 
-          {/* Contato */}
+          {/* Atendimento */}
           <div>
-            <h3 className="text-sm font-bold uppercase tracking-wider text-white">
-              Contato:
-            </h3>
+            <div className="flex items-center gap-3">
+              <h3 className="text-sm font-bold uppercase tracking-[0.16em] text-white">
+                Atendimento
+              </h3>
 
-            <div className="mt-4 space-y-3 text-sm">
-              <div className="flex items-center gap-2">
-                <Phone className="h-4 w-4 text-white/80 shrink-0" />
-                <div>
-                  <span className="font-semibold text-white">Telefone:</span>{" "}
-                  <a
-                    href={`tel:${PHONE_TEL}`}
-                    className="font-medium text-white underline underline-offset-4 hover:text-white/80"
-                  >
-                    {PHONE_DISPLAY}
-                  </a>
-                </div>
-              </div>
+              <span className="h-px flex-1 bg-white/15" />
+            </div>
 
-              <div className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-white/80 shrink-0" />
-                <div>
-                  <span className="font-semibold text-white">E-mail:</span>{" "}
-                  <a
-                    href={`mailto:${EMAIL}`}
-                    className="font-medium text-white underline underline-offset-4 hover:text-white/80"
-                  >
-                    {EMAIL}
-                  </a>
-                </div>
-              </div>
+            <div className="mt-4 rounded-xl border border-white/15 bg-black/10 p-4">
+              <div className="flex items-start gap-3">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/10">
+                  <Phone className="h-4 w-4 text-white" />
+                </span>
 
-              <div className="flex items-center gap-2 text-white/90">
-                <Clock className="h-4 w-4 text-white/80 shrink-0" />
-                <div>
-                  <span className="font-semibold text-white">Horário:</span>{" "}
-                  Seg–Sáb • 9h–18h
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-bold uppercase tracking-wider text-white/60">
+                    Telefones
+                  </p>
+
+                  <div className="mt-2 space-y-2">
+                    <a
+                      href={`tel:${PHONE_LIDIANE_TEL}`}
+                      className="group block rounded-lg border border-white/10 bg-white/[0.06] px-3 py-2 transition hover:border-white/25 hover:bg-white/10"
+                    >
+                      <span className="block text-xs text-white/60">
+                        Lidiane Farias
+                      </span>
+
+                      <span className="mt-0.5 block text-sm font-bold text-white group-hover:underline group-hover:underline-offset-4">
+                        {PHONE_LIDIANE_DISPLAY}
+                      </span>
+                    </a>
+
+                    <a
+                      href={`tel:${PHONE_CLAUDIA_TEL}`}
+                      className="group block rounded-lg border border-white/10 bg-white/[0.06] px-3 py-2 transition hover:border-white/25 hover:bg-white/10"
+                    >
+                      <span className="block text-xs text-white/60">
+                        Claudia Raposo
+                      </span>
+
+                      <span className="mt-0.5 block text-sm font-bold text-white group-hover:underline group-hover:underline-offset-4">
+                        {PHONE_CLAUDIA_DISPLAY}
+                      </span>
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Ícones sociais */}
-            <div className="mt-5 flex items-center gap-4">
+            <div className="mt-3 space-y-2">
+              <a
+                href={`mailto:${EMAIL}`}
+                className="flex items-start gap-3 rounded-xl border border-white/10 px-3 py-2 transition hover:border-white/25 hover:bg-white/[0.06]"
+              >
+                <Mail className="mt-0.5 h-4 w-4 shrink-0 text-white/70" />
+
+                <span className="min-w-0">
+                  <span className="block text-xs text-white/60">E-mail</span>
+
+                  <span className="block break-all text-sm font-semibold text-white">
+                    {EMAIL}
+                  </span>
+                </span>
+              </a>
+
+              <div className="flex items-start gap-3 rounded-xl border border-white/10 px-3 py-2">
+                <Clock className="mt-0.5 h-4 w-4 shrink-0 text-white/70" />
+
+                <span>
+                  <span className="block text-xs text-white/60">
+                    Horário de atendimento
+                  </span>
+
+                  <span className="block text-sm font-semibold text-white">
+                    Segunda a sábado • 9h às 18h
+                  </span>
+                </span>
+              </div>
+            </div>
+
+            {/* Redes sociais */}
+            <div className="mt-4 flex flex-wrap items-center gap-2">
               {/* WhatsApp */}
               <a
-                href={`https://wa.me/${PHONE_TEL.replace("+", "")}`}
+                href={`https://wa.me/${WHATSAPP_TEL.replace("+", "")}`}
                 target="_blank"
-                rel="noreferrer"
-                aria-label="WhatsApp"
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-white/10 transition hover:bg-white/15"
+                rel="noopener noreferrer"
+                aria-label="Falar com a Araras Imóveis pelo WhatsApp"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/20 bg-white/10 transition hover:-translate-y-0.5 hover:bg-white/20"
               >
                 <svg
                   viewBox="0 0 24 24"
@@ -124,9 +240,9 @@ export default function Footer() {
               <a
                 href={INSTAGRAM_URL}
                 target="_blank"
-                rel="noreferrer"
-                aria-label="Instagram"
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-white/10 transition hover:bg-white/15"
+                rel="noopener noreferrer"
+                aria-label="Instagram da Araras Imóveis"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/20 bg-white/10 transition hover:-translate-y-0.5 hover:bg-white/20"
               >
                 <svg
                   viewBox="0 0 24 24"
@@ -143,9 +259,9 @@ export default function Footer() {
               <a
                 href={YOUTUBE_URL}
                 target="_blank"
-                rel="noreferrer"
-                aria-label="YouTube"
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-white/10 transition hover:bg-white/15"
+                rel="noopener noreferrer"
+                aria-label="YouTube da Araras Imóveis"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/20 bg-white/10 transition hover:-translate-y-0.5 hover:bg-white/20"
               >
                 <svg
                   viewBox="0 0 24 24"
@@ -157,159 +273,99 @@ export default function Footer() {
                   <path d="M21.6 7.2a3 3 0 0 0-2.1-2.1C17.8 4.6 12 4.6 12 4.6s-5.8 0-7.5.5A3 3 0 0 0 2.4 7.2 31.7 31.7 0 0 0 2 12a31.7 31.7 0 0 0 .4 4.8 3 3 0 0 0 2.1 2.1c1.7.5 7.5.5 7.5.5s5.8 0 7.5-.5a3 3 0 0 0 2.1-2.1A31.7 31.7 0 0 0 22 12a31.7 31.7 0 0 0-.4-4.8ZM10 15.5v-7l6 3.5-6 3.5Z" />
                 </svg>
               </a>
+
+              <a
+                href={`https://wa.me/${WHATSAPP_TEL.replace("+", "")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-10 flex-1 items-center justify-center rounded-lg bg-white px-4 py-2 text-center text-sm font-bold text-[#365f4d] transition hover:bg-[#f5f8f3]"
+              >
+                Falar no WhatsApp
+              </a>
             </div>
           </div>
 
           {/* Regiões */}
           <div>
-            <h3 className="text-sm font-bold uppercase tracking-wider text-white">
-              Regiões:
-            </h3>
+            <div className="flex items-center gap-3">
+              <h3 className="text-sm font-bold uppercase tracking-[0.16em] text-white">
+                Regiões
+              </h3>
 
-            {/* ✅ ADICIONADO: itens clicáveis + ícones */}
-            <ul className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3">
-              <li>
-                <Link
-                  href="/imoveis?bairro=Petrópolis"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 transition hover:bg-white/15"
-                >
-                  <svg
-                    viewBox="0 0 24 24"
-                    width="18"
-                    height="18"
-                    aria-hidden="true"
-                    className="shrink-0 fill-white"
+              <span className="h-px flex-1 bg-white/15" />
+            </div>
+
+            <p className="mt-4 text-sm leading-6 text-white/75">
+              Encontre imóveis nas principais regiões de Petrópolis e da serra.
+            </p>
+
+            <ul className="mt-4 grid grid-cols-2 gap-2">
+              {REGIONS.map((region) => (
+                <li key={region.label}>
+                  <Link
+                    href={region.href}
+                    className="group flex min-h-10 w-full items-center gap-2 rounded-lg border border-white/15 bg-white/[0.06] px-3 py-2 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/10"
                   >
-                    <path d="M3 19h18L14 7l-2.2 3.6L10 8 3 19Z" />
-                  </svg>
-                  Centro
-                </Link>
-              </li>
+                    <MapPin className="h-4 w-4 shrink-0 text-white/65 transition group-hover:text-white" />
 
-              <li>
-                <Link
-                  href="/imoveis?bairro=Itaipava"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 transition hover:bg-white/15"
-                >
-                  <svg
-                    viewBox="0 0 24 24"
-                    width="18"
-                    height="18"
-                    aria-hidden="true"
-                    className="shrink-0 fill-white"
-                  >
-                    <path d="M20 4c-7 0-12 4-13.7 9.3C4.7 17.7 7.8 21 12.2 21 18 21 21 15 21 8c0-1.4-.2-2.7-1-4ZM8.6 14.2c2-3.8 5.8-6.2 10-6.9-1 6.2-4.1 11.2-10.4 11.2-2.4 0-3.7-1.8-3.6-4.3Z" />
-                  </svg>
-                  Itaipava
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  href="/imoveis?bairro=Araras"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 transition hover:bg-white/15"
-                >
-                  <svg
-                    viewBox="0 0 24 24"
-                    width="18"
-                    height="18"
-                    aria-hidden="true"
-                    className="shrink-0 fill-white"
-                  >
-                    <path d="M12 22c-2.2-2.8-3-5.2-3-7.4 0-.8.1-1.5.3-2.2-2.1.6-4.4.2-6.3-1.3 2.8-2.2 5.2-3 7.4-3 .8 0 1.5.1 2.2.3-.6-2.1-.2-4.4 1.3-6.3 2.2 2.8 3 5.2 3 7.4 0 .8-.1 1.5-.3 2.2 2.1-.6 4.4-.2 6.3 1.3-2.8 2.2-5.2 3-7.4 3-.8 0-1.5-.1-2.2-.3.6 2.1.2 4.4-1.3 6.3ZM12 10.2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6Z" />
-                  </svg>
-                  Araras
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  href="/imoveis?bairro=Cascatinha"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 transition hover:bg-white/15"
-                >
-                  <svg viewBox="0 0 24 24" width="18" height="18" className="shrink-0 fill-white">
-                    <path d="M3 19h18L14 7l-2.2 3.6L10 8 3 19Z" />
-                  </svg>
-                  Cascatinha
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  href="/imoveis?bairro=Corrêas"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 transition hover:bg-white/15"
-                >
-                  <svg viewBox="0 0 24 24" width="18" height="18" className="shrink-0 fill-white">
-                    <path d="M20 4c-7 0-12 4-13.7 9.3C4.7 17.7 7.8 21 12.2 21 18 21 21 15 21 8c0-1.4-.2-2.7-1-4Z" />
-                  </svg>
-                  Corrêas
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  href="/imoveis?bairro=Secretário"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 transition hover:bg-white/15"
-                >
-                  <svg viewBox="0 0 24 24" width="18" height="18" className="shrink-0 fill-white">
-                    <path d="M12 22c-2.2-2.8-3-5.2-3-7.4 0-3.9 2.7-7.4 3-7.8.3.4 3 3.9 3 7.8 0 2.2-.8 4.6-3 7.4Z" />
-                  </svg>
-                  Secretário
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  href="/imoveis?bairro=Pedro%20do%20Rio"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 transition hover:bg-white/15"
-                >
-                  <svg viewBox="0 0 24 24" width="18" height="18" className="shrink-0 fill-white">
-                    <path d="M2 19h20l-10-7-10 7Zm10-9c1.7-1.7 3-3.4 3-5a3 3 0 1 0-6 0c0 1.6 1.3 3.3 3 5Z" />
-                  </svg>
-                  Pedro do Rio
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  href="/imoveis?bairro=Posse"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 transition hover:bg-white/15"
-                >
-                  <svg viewBox="0 0 24 24" width="18" height="18" className="shrink-0 fill-white">
-                    <path d="M12 2 2 7l10 5 10-5-10-5Zm0 7L2 4v10l10 5 10-5V4l-10 5Z" />
-                  </svg>
-                  Posse
-                </Link>
-              </li>
+                    <span>{region.label}</span>
+                  </Link>
+                </li>
+              ))}
             </ul>
 
-            <div className="mt-5">
-              <Link
-                href="/imoveis"
-                className="inline-flex items-center justify-center rounded-full border border-white/40 px-5 py-2 text-sm font-semibold text-white transition hover:bg-white/10"
-              >
-                Ver Mais
-              </Link>
+            <Link
+              href="/imoveis"
+              className="mt-4 inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-lg border border-white/25 px-5 py-2 text-sm font-bold text-white transition hover:border-white/40 hover:bg-white/10"
+            >
+              Ver todos os imóveis
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+
+            <div className="mt-4 rounded-xl border border-white/10 bg-black/10 p-3">
+              <p className="text-xs font-bold uppercase tracking-wider text-white/60">
+                Atendimento personalizado
+              </p>
+
+              <p className="mt-1.5 text-sm leading-5 text-white/80">
+                Não encontrou o imóvel ideal? Entre em contato e conte para
+                nossa equipe o que você procura.
+              </p>
             </div>
           </div>
         </div>
 
         {/* Linha inferior */}
-        <div className="mt-8 border-t border-white/20 pt-4 text-center text-xs text-white/80">
-          © {new Date().getFullYear()} Araras Imóveis — Todos os direitos
-          reservados.
+        <div className="mt-7 flex flex-col gap-3 border-t border-white/15 py-4 text-xs text-white/65 sm:flex-row sm:items-center sm:justify-between">
+          <p>
+            © {new Date().getFullYear()} Araras Imóveis — Todos os direitos
+            reservados.
+          </p>
+
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <Link href="/imoveis" className="transition hover:text-white">
+              Imóveis
+            </Link>
+
+            <Link
+              href="/politica-de-privacidade"
+              className="transition hover:text-white"
+            >
+              Política de privacidade
+            </Link>
+
+            <a
+              href={MAPS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 transition hover:text-white"
+            >
+              Como chegar
+              <ExternalLink className="h-3 w-3" />
+            </a>
+          </div>
         </div>
       </div>
     </footer>
   );
 }
-
-
-
-
-
-
-
-
-
-

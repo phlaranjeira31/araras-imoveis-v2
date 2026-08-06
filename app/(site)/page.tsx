@@ -2,116 +2,78 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 import Image from "next/image";
+import { MapPin } from "lucide-react";
+
 import HomeSearchBar from "@/components/HomeSearchBar";
 import HomeImoveisCarousel from "@/components/HomeImoveisCarousel";
 import CorretoresSection from "@/components/CorretorasSection";
 import ContactSection from "@/components/ContactSection";
+import RegioesSection from "@/components/RegioesSection";
 
 export default function HomePage() {
   return (
     <main>
-      {/* ✅ HERO (apenas a parte da barra de busca) com background */}
-      <section
-        className="relative overflow-hidden"
-        style={{
-          backgroundImage: "url('/brand/Logotipo-07.png')",
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center",
-          backgroundSize: "cover",
-        }}
-      >
-        {/* overlay escuro */}
-        <div className="absolute inset-0 bg-black/35" />
+      {/* HERO PANORÂMICO */}
+      <section className="relative isolate z-20 overflow-visible bg-[#173d2f]">
+        <Image
+          src="/brand/hero-serra-petropolis.png"
+          alt="Vista panorâmica da Serra de Petrópolis, no Rio de Janeiro"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center"
+        />
 
-        {/* neblina suave */}
-        <div className="absolute inset-0 bg-white/10" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#06110d]/95 via-[#0b1d16]/65 to-[#0b1d16]/20" />
 
-        {/* Conteúdo do hero */}
-        <div className="relative mx-auto max-w-6xl px-4 py-14 md:py-20">
-          <div className="mx-auto w-full max-w-5xl">
-            <HomeSearchBar />
-          </div>
-        </div>
-      </section>
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/10" />
 
-      {/* ✅ CONTEÚDO COM FUNDO CONTÍNUO (SEM FAIXA BRANCA) */}
-      <section className="araras-premium-band -mb-24">
-        <div className="mx-auto max-w-6xl px-4 py-12">
-          <HomeImoveisCarousel />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_80%_28%,rgba(255,255,255,0.14),transparent_32%)]" />
 
-          <ContactSection />
+        <div className="relative mx-auto max-w-6xl px-4 pb-9 pt-9 sm:pb-10 sm:pt-10 lg:pb-11">
+          <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
+            {/* CONTEÚDO PRINCIPAL */}
+            <div className="max-w-3xl">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-white/90 backdrop-blur-sm">
+                <MapPin className="h-4 w-4" />
+                Petrópolis e região
+              </div>
 
-          <CorretoresSection />
+              <h1 className="mt-4 max-w-3xl text-4xl font-extrabold leading-[1.04] tracking-tight text-white drop-shadow-lg sm:text-5xl lg:text-[56px]">
+                Seu imóvel
+                <span className="block text-[#b8d79d]">
+                  na serra carioca
+                </span>
+              </h1>
 
-          {/* ✅ REGIÕES DE ATUAÇÃO */}
-          <section className="mt-10 rounded-3xl border border-neutral-200 bg-white p-6 shadow-sm sm:p-8">
-            <div className="mb-6">
-              <p className="text-sm font-semibold uppercase tracking-wider text-[#5a6b3f]">
-                Onde atuamos
-              </p>
-
-              <h2 className="mt-2 text-2xl font-extrabold text-slate-900 sm:text-3xl">
-                Regiões de atuação
-              </h2>
-
-              <p className="mt-3 max-w-4xl text-sm leading-relaxed text-slate-600 sm:text-base">
-                A Araras Imóveis atua em diferentes regiões de Petrópolis,
-                oferecendo atendimento próximo, transparente e conhecimento
-                especializado dos principais bairros e distritos da serra
-                fluminense.
+              <p className="mt-4 max-w-2xl text-base leading-relaxed text-white/90 drop-shadow sm:text-lg">
+                Imóveis selecionados com curadoria, atendimento próximo e
+                conhecimento profundo de Petrópolis, Itaipava, Araras e toda a
+                região.
               </p>
             </div>
 
-            <div className="grid items-center gap-8 lg:grid-cols-[1.35fr_1fr]">
-              {/* MAPA */}
-              <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white">
-                <Image
-                  src="/brand/mapa-regioes-petropolis.jpeg"
-                  alt="Mapa dos cinco distritos de Petrópolis, incluindo Petrópolis, Cascatinha, Itaipava, Pedro do Rio e Posse"
-                  width={1600}
-                  height={900}
-                  className="h-auto w-full object-contain"
-                  sizes="(max-width: 1024px) 100vw, 65vw"
-                />
-              </div>
-
-              {/* DESCRIÇÃO */}
-              <div>
-                <h3 className="text-xl font-bold text-slate-900">
-                  Conhecimento de toda a região
-                </h3>
-
-                <p className="mt-3 text-sm leading-relaxed text-slate-600 sm:text-base">
-                  Nossa atuação contempla os cinco distritos de Petrópolis:
-                  Petrópolis, Cascatinha, Itaipava, Pedro do Rio e Posse.
+            {/* ASSINATURA */}
+            <div className="hidden lg:flex lg:justify-end">
+              <div className="max-w-[300px] border-l border-white/35 pl-6 text-white">
+                <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#c6dfb0]">
+                  Araras Imóveis
                 </p>
 
-                <p className="mt-4 text-sm leading-relaxed text-slate-600 sm:text-base">
-                  Também trabalhamos com imóveis em Araras, Corrêas, Secretário,
-                  Centro, Fazenda Inglesa, Samambaia, Nogueira e outras
-                  localidades da região.
+                <h2 className="mt-3 text-2xl font-bold leading-tight">
+                  Curadoria, confiança e conhecimento da serra.
+                </h2>
+
+                <p className="mt-3 text-sm leading-relaxed text-white/80">
+                  Atendimento próximo para encontrar imóveis alinhados ao seu
+                  estilo de vida e aos seus objetivos.
                 </p>
 
-                <p className="mt-4 text-sm leading-relaxed text-slate-600 sm:text-base">
-                  Esse conhecimento local permite apresentar imóveis alinhados
-                  ao estilo de vida, às necessidades e aos objetivos de cada
-                  cliente.
-                </p>
-
-                <div className="mt-6 flex flex-wrap gap-2">
-                  {[
-                    "Petrópolis",
-                    "Cascatinha",
-                    "Itaipava",
-                    "Pedro do Rio",
-                    "Posse",
-                    "Araras",
-                    "Corrêas",
-                    "Secretário",
-                  ].map((regiao) => (
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {["Petrópolis", "Itaipava", "Araras"].map((regiao) => (
                     <span
                       key={regiao}
-                      className="rounded-full bg-[#eef1e9] px-4 py-2 text-sm font-medium text-[#5a6b3f]"
+                      className="rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-medium text-white/90 backdrop-blur-sm"
                     >
                       {regiao}
                     </span>
@@ -119,7 +81,26 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
-          </section>
+          </div>
+
+          {/* BARRA DE BUSCA */}
+          <div className="relative z-[80] mt-6">
+            <HomeSearchBar />
+          </div>
+        </div>
+      </section>
+
+      {/* CONTEÚDO DA HOME */}
+      <section className="araras-premium-band -mb-24">
+        <div className="mx-auto max-w-6xl px-4 pb-12 pt-10">
+          <HomeImoveisCarousel />
+
+          <ContactSection />
+
+          <CorretoresSection />
+
+          {/* SOMENTE A NOVA SEÇÃO */}
+          <RegioesSection />
         </div>
       </section>
     </main>
