@@ -17,6 +17,7 @@ import {
   Hash,
   FileText,
   Briefcase,
+  LayoutDashboard,
 } from "lucide-react";
 import ToggleAtivoButton from "./ToggleAtivoButton";
 import FeaturedToggle from "@/components/admin/FeaturedToggle";
@@ -194,15 +195,37 @@ export default async function AdminImoveisPage({
           <p className="text-neutral-500">Gerencie os imóveis cadastrados.</p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Link
-            href="/admin/imoveis/novo"
-            className="inline-flex items-center gap-2 rounded-full bg-green-700 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-700/30"
-          >
-            <Plus className="h-4 w-4" />
-            Cadastrar Imóvel
-          </Link>
-        </div>
+        <div className="flex flex-wrap items-center gap-2">
+  <Link
+    href="/admin/dashboard"
+    className="
+      inline-flex items-center gap-2 rounded-full
+      border border-[#365f4d]/20 bg-[#edf4e9]
+      px-5 py-2.5 text-sm font-semibold text-[#365f4d]
+      shadow-sm transition
+      hover:-translate-y-0.5 hover:border-[#365f4d]/40
+      hover:bg-[#e3eddd]
+      focus:outline-none focus:ring-2 focus:ring-[#365f4d]/20
+    "
+  >
+    <LayoutDashboard className="h-4 w-4" />
+    Dashboard Geral
+  </Link>
+
+  <Link
+    href="/admin/imoveis/novo"
+    className="
+      inline-flex items-center gap-2 rounded-full
+      bg-green-700 px-5 py-2.5 text-sm font-semibold text-white
+      shadow-sm transition
+      hover:-translate-y-0.5 hover:bg-green-800
+      focus:outline-none focus:ring-2 focus:ring-green-700/30
+    "
+  >
+    <Plus className="h-4 w-4" />
+    Cadastrar Imóvel
+  </Link>
+</div>
       </div>
 
       <section className="rounded-3xl border bg-white/80 backdrop-blur-sm p-6 space-y-6 shadow-sm">
