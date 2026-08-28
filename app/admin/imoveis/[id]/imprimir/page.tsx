@@ -583,4 +583,4 @@ function Info({
       </p>
     </div>
   );
-}
+} 

@@ -18,6 +18,7 @@ import {
   FileText,
   Briefcase,
   LayoutDashboard,
+  Users,
 } from "lucide-react";
 import ToggleAtivoButton from "./ToggleAtivoButton";
 import FeaturedToggle from "@/components/admin/FeaturedToggle";
@@ -189,43 +190,69 @@ export default async function AdminImoveisPage({
 
   return (
     <main className="px-6 py-10 max-w-6xl mx-auto space-y-6">
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Imóveis</h1>
-          <p className="text-neutral-500">Gerencie os imóveis cadastrados.</p>
+          <p className="mb-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[#6f895c]">
+            Administração
+          </p>
+          <h1 className="text-3xl font-bold tracking-[-0.03em] text-neutral-950">
+            Imóveis
+          </h1>
+          <p className="mt-1 text-sm text-neutral-500">
+            Gerencie os imóveis cadastrados.
+          </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-  <Link
-    href="/admin/dashboard"
-    className="
-      inline-flex items-center gap-2 rounded-full
-      border border-[#365f4d]/20 bg-[#edf4e9]
-      px-5 py-2.5 text-sm font-semibold text-[#365f4d]
-      shadow-sm transition
-      hover:-translate-y-0.5 hover:border-[#365f4d]/40
-      hover:bg-[#e3eddd]
-      focus:outline-none focus:ring-2 focus:ring-[#365f4d]/20
-    "
-  >
-    <LayoutDashboard className="h-4 w-4" />
-    Dashboard Geral
-  </Link>
+        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center lg:justify-end">
+          <Link
+            href="/admin/leads"
+            className="
+              group inline-flex h-11 items-center justify-center gap-2 rounded-2xl
+              border border-neutral-200 bg-white px-4 text-sm font-semibold text-neutral-700
+              shadow-[0_5px_18px_rgba(15,23,42,0.04)] transition
+              hover:-translate-y-0.5 hover:border-[#9fb497] hover:bg-[#f7faf5] hover:text-[#365f4d]
+              hover:shadow-[0_10px_24px_rgba(15,23,42,0.07)]
+              focus:outline-none focus:ring-2 focus:ring-[#365f4d]/15
+            "
+          >
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#edf4e9] text-[#527443] transition group-hover:bg-[#e4eee0]">
+              <Users className="h-4 w-4" />
+            </span>
+            Central de Leads
+          </Link>
 
-  <Link
-    href="/admin/imoveis/novo"
-    className="
-      inline-flex items-center gap-2 rounded-full
-      bg-green-700 px-5 py-2.5 text-sm font-semibold text-white
-      shadow-sm transition
-      hover:-translate-y-0.5 hover:bg-green-800
-      focus:outline-none focus:ring-2 focus:ring-green-700/30
-    "
-  >
-    <Plus className="h-4 w-4" />
-    Cadastrar Imóvel
-  </Link>
-</div>
+          <Link
+            href="/admin/dashboard"
+            className="
+              group inline-flex h-11 items-center justify-center gap-2 rounded-2xl
+              border border-[#cfdcc9] bg-[#f1f6ee] px-4 text-sm font-semibold text-[#365f4d]
+              shadow-[0_5px_18px_rgba(54,95,77,0.05)] transition
+              hover:-translate-y-0.5 hover:border-[#9fb497] hover:bg-[#e7f0e3]
+              hover:shadow-[0_10px_24px_rgba(54,95,77,0.09)]
+              focus:outline-none focus:ring-2 focus:ring-[#365f4d]/15
+            "
+          >
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/80 text-[#527443]">
+              <LayoutDashboard className="h-4 w-4" />
+            </span>
+            Dashboard Geral
+          </Link>
+
+          <Link
+            href="/admin/imoveis/novo"
+            className="
+              inline-flex h-11 items-center justify-center gap-2 rounded-2xl
+              bg-[#16863c] px-5 text-sm font-bold text-white
+              shadow-[0_8px_20px_rgba(22,134,60,0.18)] transition
+              hover:-translate-y-0.5 hover:bg-[#107533]
+              hover:shadow-[0_12px_26px_rgba(22,134,60,0.24)]
+              focus:outline-none focus:ring-2 focus:ring-[#16863c]/25
+            "
+          >
+            <Plus className="h-4 w-4" />
+            Cadastrar Imóvel
+          </Link>
+        </div>
       </div>
 
       <section className="rounded-3xl border bg-white/80 backdrop-blur-sm p-6 space-y-6 shadow-sm">

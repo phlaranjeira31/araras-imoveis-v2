@@ -15,10 +15,17 @@ model User {
   role      String   @default("ADMIN")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  leadsResponsaveis     Lead[]              @relation("LeadResponsavel")
+  historicosLead        LeadHistorico[]     @relation("LeadHistoricoUsuario")
+  tarefasLead           LeadTarefa[]        @relation("LeadTarefaResponsavel")
+  visitasResponsaveis   Visita[]            @relation("VisitaResponsavel")
+  propostasResponsaveis Proposta[]          @relation("PropostaResponsavel")
+  historicosProposta    PropostaHistorico[] @relation("PropostaHistoricoUsuario")
 }
 
 model Imovel {
-  id                   String   @id @default(cuid())
+  id                   String    @id @default(cuid())
   title                String
   city                 String
   neighborhood         String
@@ -29,13 +36,13 @@ model Imovel {
   lng                  Float?
   price                Int?
   priceRent            Int?
-  slug                 String   @unique
+  slug                 String    @unique
   coverPhotoId         String?
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
-  purpose              String?  @default("comprar")
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  purpose              String?   @default("comprar")
   tipo                 String?
-  featured             Boolean  @default(false)
+  featured             Boolean   @default(false)
   featuredAt           DateTime?
   quartos              Int?
   suites               Int?
@@ -54,13 +61,16 @@ model Imovel {
   proprietarioCpf      String?
   proprietarioEmail    String?
   condominioNome       String?
-  codigo               String?  @unique
-  observacoesInternas String?
-  
-  photos               Photo[]
+  codigo               String?   @unique
+  observacoesInternas  String?
 
+  photos Photo[]
+  ativo  Boolean @default(true)
 
-  ativo     Boolean  @default(true)
+  leadsOrigem Lead[]            @relation("LeadImovelOrigem")
+  interesses  InteresseImovel[]
+  visitas     Visita[]
+  propostas   Proposta[]
 
   @@index([city])
   @@index([city, neighborhood])
@@ -76,7 +86,456 @@ model Photo {
   imovelId  String
   createdAt DateTime @default(now())
   publicId  String?  @unique
-  imovel    Imovel   @relation(fields: [imovelId], references: [id], onDelete: Cascade)
+
+  imovel Imovel @relation(fields: [imovelId], references: [id], onDelete: Cascade)
 
   @@index([imovelId])
+}
+
+enum LeadStatus {
+  NOVO
+  PRIMEIRO_CONTATO
+  EM_ATENDIMENTO
+  QUALIFICADO
+  IMOVEIS_ENVIADOS
+  VISITA_AGENDADA
+  VISITA_REALIZADA
+  PROPOSTA
+  NEGOCIACAO
+  CONVERTIDO
+  PERDIDO
+  SEM_RETORNO
+  SEM_INTERESSE
+}
+
+enum LeadPrioridade {
+  BAIXA
+  NORMAL
+  ALTA
+  URGENTE
+}
+
+enum LeadTemperatura {
+  FRIO
+  MORNO
+  QUENTE
+}
+
+enum LeadOrigem {
+  SITE
+  WHATSAPP
+  TELEFONE
+  INSTAGRAM
+  FACEBOOK
+  GOOGLE
+  INDICACAO
+  PRESENCIAL
+  PORTAL_IMOBILIARIO
+  PLACA
+  EVENTO
+  OUTRO
+}
+
+enum DemandaFinalidade {
+  COMPRAR
+  ALUGAR
+  TEMPORADA
+  INVESTIR
+  VENDER
+}
+
+enum InteresseOrigem {
+  MANUAL
+  MATCH_AUTOMATICO
+  SITE
+  WHATSAPP
+  OUTRO
+}
+
+enum InteresseStatus {
+  SUGERIDO
+  ENVIADO
+  VISUALIZADO
+  INTERESSADO
+  VISITA_AGENDADA
+  VISITA_REALIZADA
+  PROPOSTA
+  DESCARTADO
+}
+
+enum TarefaTipo {
+  LIGACAO
+  WHATSAPP
+  EMAIL
+  RETORNO
+  DOCUMENTO
+  VISITA
+  PROPOSTA
+  OUTRO
+}
+
+enum TarefaStatus {
+  PENDENTE
+  CONCLUIDA
+  CANCELADA
+}
+
+enum VisitaStatus {
+  AGENDADA
+  CONFIRMADA
+  REALIZADA
+  CANCELADA
+  NAO_COMPARECEU
+}
+
+enum PropostaStatus {
+  RASCUNHO
+  ENVIADA
+  EM_ANALISE
+  CONTRAPROPOSTA
+  NEGOCIACAO
+  ACEITA
+  RECUSADA
+  CANCELADA
+}
+
+enum ClienteStatus {
+  ATIVO
+  INATIVO
+}
+
+model Contato {
+  id String @id @default(cuid())
+
+  nome String
+
+  telefone            String?
+  telefoneNormalizado String?
+  whatsapp            String?
+  email               String?
+  cpf                 String?
+
+  observacoesGerais String?
+
+  consentimentoContato  Boolean?
+  consentimentoEm       DateTime?
+  origemConsentimento   String?
+  bloqueadoParaContato  Boolean   @default(false)
+  motivoBloqueioContato String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  leads   Lead[]
+  cliente Cliente?
+
+  @@index([nome])
+  @@index([telefone])
+  @@index([telefoneNormalizado])
+  @@index([email])
+  @@index([createdAt])
+}
+
+model Lead {
+  id     String @id @default(cuid())
+  numero Int    @unique @default(autoincrement())
+
+  contatoId String
+  contato   Contato @relation(fields: [contatoId], references: [id], onDelete: Restrict)
+
+  status      LeadStatus      @default(NOVO)
+  prioridade  LeadPrioridade  @default(NORMAL)
+  temperatura LeadTemperatura @default(MORNO)
+
+  origem        LeadOrigem         @default(OUTRO)
+  origemDetalhe String?
+  finalidade    DemandaFinalidade?
+
+  assunto         String?
+  mensagemInicial String?
+  observacoes     String?
+  score           Int     @default(0)
+
+  responsavelId   String?
+  responsavelNome String?
+  responsavel     User?   @relation("LeadResponsavel", fields: [responsavelId], references: [id], onDelete: SetNull)
+
+  imovelOrigemId String?
+  imovelOrigem   Imovel? @relation("LeadImovelOrigem", fields: [imovelOrigemId], references: [id], onDelete: SetNull)
+
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  utmTerm     String?
+  utmContent  String?
+
+  paginaOrigem String?
+  referrer     String?
+
+  primeiroContatoEm DateTime?
+  ultimoContatoEm   DateTime?
+  convertidoEm      DateTime?
+  perdidoEm         DateTime?
+  motivoPerda       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  demandas   Demanda[]
+  interesses InteresseImovel[]
+  historicos LeadHistorico[]
+  tarefas    LeadTarefa[]
+  visitas    Visita[]
+  propostas  Proposta[]
+
+  clienteGerado Cliente? @relation("ClienteLeadOrigem")
+
+  @@index([contatoId])
+  @@index([status])
+  @@index([prioridade])
+  @@index([temperatura])
+  @@index([origem])
+  @@index([responsavelId])
+  @@index([responsavelNome])
+  @@index([imovelOrigemId])
+  @@index([createdAt])
+  @@index([updatedAt])
+}
+
+model Demanda {
+  id     String @id @default(cuid())
+  leadId String
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Restrict)
+
+  ativo      Boolean           @default(true)
+  finalidade DemandaFinalidade
+
+  tipoImoveis String[] @default([])
+  cidades     String[] @default([])
+  bairros     String[] @default([])
+
+  valorMin Int?
+  valorMax Int?
+
+  quartosMin   Int?
+  suitesMin    Int?
+  banheirosMin Int?
+  vagasMin     Int?
+
+  areaConstruidaMin Int?
+  areaConstruidaMax Int?
+  areaTerrenoMin    Int?
+  areaTerrenoMax    Int?
+
+  mobiliado        Boolean?
+  desejaCondominio Boolean?
+  aceitaReforma    Boolean?
+  observacoes      String?
+  criteriosExtras  Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([leadId])
+  @@index([finalidade])
+  @@index([ativo])
+  @@index([createdAt])
+}
+
+model InteresseImovel {
+  id     String @id @default(cuid())
+  leadId String
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Restrict)
+
+  imovelId String?
+  imovel   Imovel? @relation(fields: [imovelId], references: [id], onDelete: SetNull)
+
+  imovelCodigoSnapshot String?
+  imovelTituloSnapshot String?
+
+  origem InteresseOrigem @default(MANUAL)
+  status InteresseStatus @default(INTERESSADO)
+  score  Int?
+
+  motivosMatch Json?
+  observacoes  String?
+
+  ultimoContatoEm DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([leadId])
+  @@index([imovelId])
+  @@index([status])
+  @@index([origem])
+  @@index([score])
+  @@index([createdAt])
+}
+
+model LeadHistorico {
+  id     String @id @default(cuid())
+  leadId String
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Restrict)
+
+  usuarioId String?
+  usuario   User?   @relation("LeadHistoricoUsuario", fields: [usuarioId], references: [id], onDelete: SetNull)
+
+  tipo      String
+  descricao String
+  dados     Json?
+
+  createdAt DateTime @default(now())
+
+  @@index([leadId])
+  @@index([leadId, createdAt])
+  @@index([usuarioId])
+  @@index([tipo])
+}
+
+model LeadTarefa {
+  id     String @id @default(cuid())
+  leadId String
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Restrict)
+
+  responsavelId String?
+  responsavel   User?   @relation("LeadTarefaResponsavel", fields: [responsavelId], references: [id], onDelete: SetNull)
+
+  titulo     String
+  descricao  String?
+  tipo       TarefaTipo     @default(OUTRO)
+  status     TarefaStatus   @default(PENDENTE)
+  prioridade LeadPrioridade @default(NORMAL)
+
+  dataPrevista DateTime
+  concluidaEm  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([leadId])
+  @@index([responsavelId])
+  @@index([status])
+  @@index([dataPrevista])
+  @@index([prioridade])
+}
+
+model Visita {
+  id     String @id @default(cuid())
+  leadId String
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Restrict)
+
+  imovelId String?
+  imovel   Imovel? @relation(fields: [imovelId], references: [id], onDelete: SetNull)
+
+  responsavelId String?
+  responsavel   User?   @relation("VisitaResponsavel", fields: [responsavelId], references: [id], onDelete: SetNull)
+
+  imovelCodigoSnapshot String?
+  imovelTituloSnapshot String?
+
+  dataHora       DateTime
+  duracaoMinutos Int          @default(60)
+  status         VisitaStatus @default(AGENDADA)
+
+  observacoes String?
+  feedback    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([leadId])
+  @@index([imovelId])
+  @@index([responsavelId])
+  @@index([status])
+  @@index([dataHora])
+}
+
+model Proposta {
+  id     String @id @default(cuid())
+  numero Int    @unique @default(autoincrement())
+
+  leadId String
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Restrict)
+
+  imovelId String?
+  imovel   Imovel? @relation(fields: [imovelId], references: [id], onDelete: SetNull)
+
+  responsavelId String?
+  responsavel   User?   @relation("PropostaResponsavel", fields: [responsavelId], references: [id], onDelete: SetNull)
+
+  imovelCodigoSnapshot String?
+  imovelTituloSnapshot String?
+
+  valorAnuncio  Int?
+  valorProposto Int
+  entrada       Int?
+
+  financiamento  Boolean?
+  formaPagamento String?
+  condicoes      String?
+
+  status   PropostaStatus @default(RASCUNHO)
+  validade DateTime?
+
+  aceitaEm   DateTime?
+  recusadaEm DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  historicos PropostaHistorico[]
+
+  @@index([leadId])
+  @@index([imovelId])
+  @@index([responsavelId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model PropostaHistorico {
+  id         String   @id @default(cuid())
+  propostaId String
+  proposta   Proposta @relation(fields: [propostaId], references: [id], onDelete: Restrict)
+
+  usuarioId String?
+  usuario   User?   @relation("PropostaHistoricoUsuario", fields: [usuarioId], references: [id], onDelete: SetNull)
+
+  acao String
+
+  statusAnterior PropostaStatus?
+  statusNovo     PropostaStatus?
+
+  valorAnterior Int?
+  valorNovo     Int?
+
+  descricao String?
+  dados     Json?
+
+  createdAt DateTime @default(now())
+
+  @@index([propostaId])
+  @@index([propostaId, createdAt])
+  @@index([usuarioId])
+}
+
+model Cliente {
+  id String @id @default(cuid())
+
+  contatoId String  @unique
+  contato   Contato @relation(fields: [contatoId], references: [id], onDelete: Restrict)
+
+  leadOrigemId String? @unique
+  leadOrigem   Lead?   @relation("ClienteLeadOrigem", fields: [leadOrigemId], references: [id], onDelete: SetNull)
+
+  status ClienteStatus @default(ATIVO)
+
+  observacoes String?
+
+  clienteDesde DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([status])
+  @@index([clienteDesde])
 }
